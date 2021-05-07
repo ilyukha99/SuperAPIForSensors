@@ -3,9 +3,15 @@ package org.sas.dao;
 import com.sun.istack.NotNull;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.sas.model.SensorData;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 public class SensorDataDAO  implements DAO<SensorData, Integer>{
     private final SessionFactory sessionFactory;
@@ -46,6 +52,14 @@ public class SensorDataDAO  implements DAO<SensorData, Integer>{
             session.beginTransaction();
             session.delete(sensorData);
             session.getTransaction().commit();
+        }
+    }
+
+    @NonNull
+    public List<SensorData> getSensorDataByDate(@Nullable Timestamp startDate, @Nullable Timestamp endDate) {
+        try (final  Session session = sessionFactory.openSession()){
+            Query query = session.createQuery("from SensorData where record_date > " + "startDate" + "");
+            return new LinkedList<>();
         }
     }
 }
