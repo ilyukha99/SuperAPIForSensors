@@ -34,10 +34,11 @@ create table if not exists Sensors (
     user_id integer not null references Users(id)
 );
 
-create table if not exists SensorData(
+create table if not exists SensorData (
     id serial primary key,
     sensor_id integer references Sensors(id),
-    value real not null
+    value real not null,
+    time timestamp not null
 );
 
 insert into Users (login, password, token, utc_timezone) values('Nek', 'drozd1337', 'abcabc', 7);

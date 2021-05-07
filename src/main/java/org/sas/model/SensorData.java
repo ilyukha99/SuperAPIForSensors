@@ -4,10 +4,10 @@ import java.util.Date;
 import java.util.Objects;
 
 public class SensorData {
-    public int id;
-    public int sensorId;
-    public float value;
-    public Date recordDate;
+    private int id;
+    private int sensorId;
+    private float value;
+    private Date recordDate;
 
     public int getId() {
         return id;
@@ -53,5 +53,13 @@ public class SensorData {
     @Override
     public int hashCode() {
         return Objects.hash(id, sensorId, value, recordDate);
+    }
+
+    @Override
+    public String toString() {
+        return "SensorData{id=" + id +
+                ", sensorId=" + sensorId +
+                ", value=" + value +
+                ", recordDate=" + recordDate + '}';
     }
 }

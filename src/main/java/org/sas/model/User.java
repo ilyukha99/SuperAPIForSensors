@@ -37,8 +37,6 @@ public class User {
         return login;
     }
 
-    public User() {}
-
     public void setLogin(String login) {
         this.login = login;
     }

@@ -1,15 +1,20 @@
 package org.sas.dao;
 
-import com.sun.istack.NotNull;
+import org.springframework.lang.NonNull;
 import org.sas.model.SensorType;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.lang.Nullable;
 
 public class SensorTypeDAO implements DAO<SensorType, Integer> {
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
+
+    public SensorTypeDAO(@NonNull SessionFactory factory) {
+        sessionFactory = factory;
+    }
 
     @Override
-    public void create(@NotNull SensorType sensorType) {
+    public void create(@NonNull SensorType sensorType) {
         try(Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.save(sensorType);
@@ -18,15 +23,15 @@ public class SensorTypeDAO implements DAO<SensorType, Integer> {
     }
 
     @Override
-    public SensorType read(@NotNull Integer id) {
+    @Nullable
+    public SensorType read(@NonNull Integer id) {
         try(Session session = sessionFactory.openSession()) {
-            SensorType result = session.get(SensorType.class, id);
-            return result != null ? result : new SensorType();
+            return session.get(SensorType.class, id);
         }
     }
 
     @Override
-    public void update(@NotNull SensorType sensorType) {
+    public void update(@NonNull SensorType sensorType) {
         try(Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.update(sensorType);
@@ -35,7 +40,7 @@ public class SensorTypeDAO implements DAO<SensorType, Integer> {
     }
 
     @Override
-    public void delete(@NotNull SensorType sensorType) {
+    public void delete(@NonNull SensorType sensorType) {
         try(Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.delete(sensorType);

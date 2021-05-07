@@ -1,6 +1,5 @@
 package org.sas.dao;
 
-import com.sun.istack.NotNull;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -16,12 +15,12 @@ import java.util.List;
 public class SensorDataDAO  implements DAO<SensorData, Integer>{
     private final SessionFactory sessionFactory;
 
-    public SensorDataDAO(@NotNull final SessionFactory sessionFactory) {
+    public SensorDataDAO(@NonNull final SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
     @Override
-    public void create(@NotNull SensorData sensorData) {
+    public void create(@NonNull SensorData sensorData){
         try (final Session session = sessionFactory.openSession()){
             session.beginTransaction();
             session.save(sensorData);
@@ -31,14 +30,14 @@ public class SensorDataDAO  implements DAO<SensorData, Integer>{
 
     @Override
     @Nullable
-    public SensorData read(@NotNull Integer id) {
+    public SensorData read(@NonNull Integer id) {
         try (final Session session = sessionFactory.openSession()){
             return session.get(SensorData.class, id);
         }
     }
 
     @Override
-    public void update(@NotNull SensorData sensorData) {
+    public void update(@NonNull SensorData sensorData) {
         try (final Session session = sessionFactory.openSession()){
             session.beginTransaction();
             session.update(sensorData);
@@ -47,7 +46,7 @@ public class SensorDataDAO  implements DAO<SensorData, Integer>{
     }
 
     @Override
-    public void delete(SensorData sensorData) {
+    public void delete(@NonNull SensorData sensorData) {
         try (final Session session = sessionFactory.openSession()){
             session.beginTransaction();
             session.delete(sensorData);

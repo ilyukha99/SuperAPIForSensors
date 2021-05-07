@@ -1,8 +1,8 @@
 package org.sas.dao;
 
-public interface DAO<Entity, Key> {
-    void create(Entity entity);
-    Entity read(Key key);
-    void update(Entity entity);
-    void delete(Entity entity);
+public interface DAO<E, K> {
+    void create(E entity);
+    E read(K key);
+    void update(E entity);
+    void delete(E entity);
 }

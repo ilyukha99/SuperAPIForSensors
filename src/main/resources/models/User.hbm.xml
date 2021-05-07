@@ -5,7 +5,9 @@
 
 <hibernate-mapping xmlns="http://www.hibernate.org/xsd/hibernate-mapping">
     <class name="org.sas.model.User" table="users">
-        <id name="id" column="id"/>
+        <id name="id" column="id">
+            <generator class="identity"/>
+        </id>
         <property name="login" column="login"/>
         <property name="password" column="password"/>
         <property name="token" column="token"/>

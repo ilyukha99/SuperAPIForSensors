@@ -1,19 +1,20 @@
 package org.sas.dao;
 
-import com.sun.istack.NotNull;
+import org.springframework.lang.NonNull;
 import org.sas.model.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.lang.Nullable;
 
 public class UserDAO implements DAO<User, Integer> {
     private final SessionFactory sessionFactory;
 
-    public UserDAO(@NotNull final SessionFactory factory) {
+    public UserDAO(@NonNull final SessionFactory factory) {
         sessionFactory = factory;
     }
 
     @Override
-    public void create(@NotNull User user) {
+    public void create(@NonNull User user) {
         try (final Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.save(user);
@@ -22,15 +23,15 @@ public class UserDAO implements DAO<User, Integer> {
     }
 
     @Override
-    public User read(@NotNull Integer id) {
+    @Nullable
+    public User read(@NonNull Integer id) {
         try (final Session session = sessionFactory.openSession()) {
-            final User result = session.get(User.class, id);
-            return result != null ? result : new User();
+            return session.get(User.class, id);
         }
     }
 
     @Override
-    public void update(@NotNull User user) {
+    public void update(@NonNull User user) {
         try (final Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.update(user);
@@ -39,7 +40,7 @@ public class UserDAO implements DAO<User, Integer> {
     }
 
     @Override
-    public void delete(@NotNull User user) {
+    public void delete(@NonNull User user) {
         try (final Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             session.delete(user);

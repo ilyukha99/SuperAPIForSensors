@@ -41,6 +41,7 @@ public class UserDAOTest {
     public void checkCreatedUser() {
         userDAO.create(testUser);
         final User user = userDAO.read(primaryKey);
+        assertNotNull(user);
         assertEquals(user, testUser);
     }
 
@@ -51,10 +52,10 @@ public class UserDAOTest {
     public void checkDeletions() {
         userDAO.create(testUser);
         final User userBeforeDeletion = userDAO.read(primaryKey);
-        assertNotNull(userBeforeDeletion.getLogin());
+        assertNotNull(userBeforeDeletion);
         userDAO.delete(testUser);
         final User userAfterDeletion = userDAO.read(primaryKey);
-        assertNull(userAfterDeletion.getLogin());
+        assertNull(userAfterDeletion);
     }
 
     /**
@@ -67,6 +68,7 @@ public class UserDAOTest {
         testUser.setPassword("NewPassword");
         userDAO.update(testUser);
         final User user = userDAO.read(primaryKey);
+        assertNotNull(user);
         assertTrue(user.getLogin().equals("NewLogin") && user.getPassword().equals("NewPassword"));
     }
 }

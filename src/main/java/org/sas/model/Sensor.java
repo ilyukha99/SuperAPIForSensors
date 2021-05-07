@@ -3,27 +3,21 @@ package org.sas.model;
 import java.util.Objects;
 
 public class Sensor {
-    public int id;
-    public String name;
-    public int type_id;
-    public int user_id;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Sensor)) return false;
-        Sensor sensor = (Sensor) o;
-        return id == sensor.id && type_id == sensor.type_id && user_id == sensor.user_id
-                && Objects.equals(name, sensor.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, type_id, user_id);
-    }
+    private int id;
+    private String name;
+    private SensorType type;
+    private User user;
 
     public int getId() {
         return id;
+    }
+
+    public SensorType getType() {
+        return type;
+    }
+
+    public void setType(SensorType type) {
+        this.type = type;
     }
 
     public void setId(int id) {
@@ -38,19 +32,33 @@ public class Sensor {
         this.name = name;
     }
 
-    public int getType_id() {
-        return type_id;
+    public User getUser() {
+        return user;
     }
 
-    public void setType_id(int type_id) {
-        this.type_id = type_id;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public int getUser_id() {
-        return user_id;
+    @Override
+    public String toString() {
+        return "Sensor{id=" + id +
+                ", name='" + name + '\'' +
+                ", type=" + type +
+                ", user=" + user + '}';
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Sensor)) return false;
+        Sensor sensor = (Sensor) o;
+        return id == sensor.id && Objects.equals(name, sensor.name) && Objects.equals(type, sensor.type)
+                && Objects.equals(user, sensor.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, type, user);
     }
 }

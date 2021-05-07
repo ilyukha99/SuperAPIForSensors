@@ -5,9 +5,11 @@
 
 <hibernate-mapping xmlns="http://www.hibernate.org/xsd/hibernate-mapping">
     <class name="org.sas.model.House" table="houses">
-        <id name="id" column="id"/>
+        <id name="id" column="id">
+            <generator class="identity"/>
+        </id>
         <property name="name" column="name"/>
         <property name="color" column="color"/>
-        <property name="user_id" column="user_id"/>
+        <property name="userId" column="user_id"/>
     </class>
 </hibernate-mapping>
