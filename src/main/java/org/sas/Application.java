@@ -1,5 +1,6 @@
 package org.sas;
 
+import org.hibernate.Hibernate;
 import org.sas.dao.*;
 import org.sas.model.Sensor;
 import org.sas.model.SensorData;
@@ -7,6 +8,7 @@ import org.sas.model.SensorType;
 import org.sas.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.sas.utils.HibernateUtils;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 
 import javax.persistence.EntityManager;
@@ -19,7 +21,7 @@ public class Application {
 
     public static void main(String[] args) {
 
-        try (SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory()) {
+        try (SessionFactory sessionFactory = HibernateUtils.getSessionFactory()) {
             DAO<User, Integer> userDAO = new UserDAO(sessionFactory);
             DAO<SensorType, Integer> sensorTypeDAO = new SensorTypeDAO(sessionFactory);
 //
