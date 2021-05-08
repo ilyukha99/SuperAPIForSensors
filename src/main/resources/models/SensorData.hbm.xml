@@ -4,11 +4,16 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping xmlns="http://www.hibernate.org/xsd/hibernate-mapping">
-    <class name="org.sas.model.SensorType" table="sensor_type">
+    <class name="org.sas.model.SensorData" table="SensorsData">
         <id name="id" column="id">
             <generator class="identity"/>
         </id>
-        <property name="name" column="name"/>
-        <property name="description" column="description"/>
+        <property name="value" column="value"/>
+        <property name="recordDate" column="record_date"/>
+
+        <many-to-one name="sensorId" column="sensor_id"
+                     class="org.sas.model.User"
+                     cascade="save-update"/>
+
     </class>
 </hibernate-mapping>

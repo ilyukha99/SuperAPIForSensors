@@ -1,13 +1,13 @@
 package org.sas.model;
 
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 public class SensorData {
     private int id;
     private int sensorId;
     private float value;
-    private Date recordDate;
+    private Timestamp recordDate;
 
     public int getId() {
         return id;
@@ -33,11 +33,11 @@ public class SensorData {
         this.value = value;
     }
 
-    public Date getRecordDate() {
+    public Timestamp getRecordDate() {
         return recordDate;
     }
 
-    public void setRecordDate(Date recordDate) {
+    public void setRecordDate(Timestamp recordDate) {
         this.recordDate = recordDate;
     }
 

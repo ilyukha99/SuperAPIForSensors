@@ -1,14 +1,13 @@
 package org.sas.dao;
 
+import org.sas.model.SensorData;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.sas.model.SensorData;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,9 +54,15 @@ public class SensorDataDAO  implements DAO<SensorData, Integer>{
     }
 
     @NonNull
-    public List<SensorData> getSensorDataByDate(@Nullable Timestamp startDate, @Nullable Timestamp endDate) {
+    public List getSensorDataByDate(@Nullable Timestamp startDate, @Nullable Timestamp endDate) {
         try (final  Session session = sessionFactory.openSession()){
-            Query query = session.createQuery("from SensorData where record_date > " + "startDate" + "");
+            if (startDate != null && endDate != null) {
+//                Query query = session.createSQLQuery("select * from sensor_data where record_date > " + startDate + " and " + "");
+                Query query = session.createQuery("from org.sas.model.SensorData sd where sd.recordDate between :startDate and :endDate");
+                query.setParameter("startDate", startDate);
+                query.setParameter("endDate", endDate);
+                return query.list();
+            }
             return new LinkedList<>();
         }
     }
