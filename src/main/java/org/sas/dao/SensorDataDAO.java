@@ -20,11 +20,12 @@ public class SensorDataDAO  implements DAO<SensorData, Integer>{
     }
 
     @Override
-    public void create(@NonNull SensorData sensorData){
+    public Integer create(@NonNull SensorData sensorData){
         try (final Session session = sessionFactory.openSession()){
             session.beginTransaction();
-            session.save(sensorData);
+            Integer id = (Integer) session.save(sensorData);
             session.getTransaction().commit();
+            return id;
         }
     }
 

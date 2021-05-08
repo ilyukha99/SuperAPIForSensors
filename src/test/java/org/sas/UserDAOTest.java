@@ -18,7 +18,6 @@ public class UserDAOTest {
     public void doBefore() {
         sessionFactory = new Configuration().configure().buildSessionFactory();
         userDAO = new UserDAO(sessionFactory);
-        testUser.setId(primaryKey);
         testUser.setToken("qwerty");
         testUser.setPassword("12345");
         testUser.setTimezone(18);
@@ -39,8 +38,8 @@ public class UserDAOTest {
      */
     @Test
     public void checkCreatedUser() {
-        userDAO.create(testUser);
-        final User user = userDAO.read(primaryKey);
+        int id = userDAO.create(testUser);
+        final User user = userDAO.read(id);
         assertNotNull(user);
         assertEquals(user, testUser);
     }
@@ -50,11 +49,11 @@ public class UserDAOTest {
      */
     @Test
     public void checkDeletions() {
-        userDAO.create(testUser);
-        final User userBeforeDeletion = userDAO.read(primaryKey);
+        int id = userDAO.create(testUser);
+        final User userBeforeDeletion = userDAO.read(id);
         assertNotNull(userBeforeDeletion);
         userDAO.delete(testUser);
-        final User userAfterDeletion = userDAO.read(primaryKey);
+        final User userAfterDeletion = userDAO.read(id);
         assertNull(userAfterDeletion);
     }
 
@@ -63,11 +62,11 @@ public class UserDAOTest {
      */
     @Test
     public void checkUpdates() {
-        userDAO.create(testUser);
+        int id = userDAO.create(testUser);
         testUser.setLogin("NewLogin");
         testUser.setPassword("NewPassword");
         userDAO.update(testUser);
-        final User user = userDAO.read(primaryKey);
+        final User user = userDAO.read(id);
         assertNotNull(user);
         assertTrue(user.getLogin().equals("NewLogin") && user.getPassword().equals("NewPassword"));
     }

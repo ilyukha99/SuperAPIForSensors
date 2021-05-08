@@ -1,9 +1,6 @@
 package org.sas.controllers.webapi;
 
-import org.hibernate.Hibernate;
-import org.hibernate.SessionFactory;
 import org.sas.dao.SensorDataDAO;
-import org.sas.model.Sensor;
 import org.sas.model.SensorData;
 import org.sas.utils.HibernateUtils;
 import org.springframework.http.HttpStatus;
@@ -13,12 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.persistence.EntityManagerFactory;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 @Controller
 public class SensorsController {

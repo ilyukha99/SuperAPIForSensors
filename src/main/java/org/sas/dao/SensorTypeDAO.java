@@ -14,11 +14,12 @@ public class SensorTypeDAO implements DAO<SensorType, Integer> {
     }
 
     @Override
-    public void create(@NonNull SensorType sensorType) {
+    public Integer create(@NonNull SensorType sensorType) {
         try(Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            session.save(sensorType);
+            Integer id = (Integer) session.save(sensorType);
             session.getTransaction().commit();
+            return id;
         }
     }
 

@@ -14,11 +14,12 @@ public class UserDAO implements DAO<User, Integer> {
     }
 
     @Override
-    public void create(@NonNull User user) {
+    public Integer create(@NonNull User user) {
         try (final Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            session.save(user);
+            Integer id = (Integer) session.save(user);
             session.getTransaction().commit();
+            return id;
         }
     }
 
