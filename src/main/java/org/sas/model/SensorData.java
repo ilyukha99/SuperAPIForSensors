@@ -1,13 +1,15 @@
 package org.sas.model;
 
+import org.hibernate.Hibernate;
+
 import java.sql.Timestamp;
 import java.util.Objects;
 
 public class SensorData {
     private int id;
-    private int sensorId;
+    private Sensor sensor;
     private float value;
-    private Timestamp recordDate;
+    private Timestamp recordTime;
 
     public int getId() {
         return id;
@@ -17,12 +19,12 @@ public class SensorData {
         this.id = id;
     }
 
-    public int getSensorId() {
-        return sensorId;
+    public Sensor getSensor() {
+        return sensor;
     }
 
-    public void setSensorId(int sensorId) {
-        this.sensorId = sensorId;
+    public void setSensor(Sensor sensor) {
+        this.sensor = sensor;
     }
 
     public float getValue() {
@@ -33,12 +35,12 @@ public class SensorData {
         this.value = value;
     }
 
-    public Timestamp getRecordDate() {
-        return recordDate;
+    public Timestamp getRecordTime() {
+        return recordTime;
     }
 
-    public void setRecordDate(Timestamp recordDate) {
-        this.recordDate = recordDate;
+    public void setRecordTime(Timestamp recordDate) {
+        this.recordTime = recordDate;
     }
 
     @Override
@@ -46,20 +48,21 @@ public class SensorData {
         if (this == o) return true;
         if (!(o instanceof SensorData)) return false;
         var sensorData = (SensorData) o;
-        return id == sensorData.id && sensorId == sensorData.sensorId && value == sensorData.value
-                && Objects.equals(recordDate, sensorData.recordDate);
+        Hibernate.initialize(sensor);
+        return id == sensorData.id && sensor == sensorData.sensor && value == sensorData.value
+                && Objects.equals(recordTime, sensorData.recordTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, sensorId, value, recordDate);
+        return Objects.hash(id, sensor.getId(), value, recordTime);
     }
 
     @Override
     public String toString() {
         return "SensorData{id=" + id +
-                ", sensorId=" + sensorId +
+                ", sensorId=" + sensor.getId() +
                 ", value=" + value +
-                ", recordDate=" + recordDate + '}';
+                ", recordDate=" + recordTime + '}';
     }
 }

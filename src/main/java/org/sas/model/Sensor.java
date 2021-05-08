@@ -44,8 +44,8 @@ public class Sensor {
     public String toString() {
         return "Sensor{id=" + id +
                 ", name='" + name + '\'' +
-                ", type=" + type +
-                ", user=" + user + '}';
+                ", type=" + type.getName() +
+                ", user=" + user.getLogin() + '}';
     }
 
     @Override
@@ -59,6 +59,6 @@ public class Sensor {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, type, user);
+        return Objects.hash(id, name, type.getName(), user.getLogin());
     }
 }

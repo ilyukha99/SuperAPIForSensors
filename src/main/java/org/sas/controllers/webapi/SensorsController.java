@@ -1,21 +1,42 @@
 package org.sas.controllers.webapi;
 
+import org.hibernate.Hibernate;
+import org.hibernate.SessionFactory;
+import org.sas.dao.SensorDataDAO;
+import org.sas.model.Sensor;
 import org.sas.model.SensorData;
+import org.sas.utils.HibernateUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.persistence.EntityManagerFactory;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 @Controller
 public class SensorsController {
 
-    @GetMapping("/sensors/{id}")
-    public ResponseEntity<SensorData> getDataByDate(@PathVariable int id, @RequestParam(required = false)
-            Timestamp startDate, @RequestParam(required = false) Timestamp endDate) {
+    @GetMapping("/sensors/{id}/data")
+    public ResponseEntity<HashMap<String, Object>> getDataByDate(@PathVariable int id, @RequestParam(required = false)
+            Timestamp start, @RequestParam(required = false) Timestamp end) {
+        HashMap<String, Object> response = new HashMap<>();
+        response.put("error", "");
+        response.put("code", 0);
 
-        return new ResponseEntity<SensorData>(new SensorData(), HttpStatus.OK);
+        SensorDataDAO sensorDataDAO = new SensorDataDAO(HibernateUtils.getSessionFactory());
+        ArrayList<SensorData> sensorDataList = (ArrayList<SensorData>) sensorDataDAO.getSensorDataByDate(start, end);
+        HashMap<Long, Float> responseDataList = new HashMap<>();
+        for (SensorData sensorData: sensorDataList) {
+            responseDataList.put(sensorData.getRecordTime().getTime(), sensorData.getValue());
+        }
+        response.put("data", responseDataList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

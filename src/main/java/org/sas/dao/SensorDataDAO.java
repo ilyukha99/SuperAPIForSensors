@@ -1,5 +1,6 @@
 package org.sas.dao;
 
+import org.hibernate.Hibernate;
 import org.sas.model.SensorData;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -31,7 +32,11 @@ public class SensorDataDAO  implements DAO<SensorData, Integer>{
     @Nullable
     public SensorData read(@NonNull Integer id) {
         try (final Session session = sessionFactory.openSession()){
-            return session.get(SensorData.class, id);
+            SensorData sensorData = session.get(SensorData.class, id);
+            if (sensorData != null) {
+                Hibernate.initialize(sensorData.getSensor());
+            }
+            return sensorData;
         }
     }
 
@@ -54,16 +59,26 @@ public class SensorDataDAO  implements DAO<SensorData, Integer>{
     }
 
     @NonNull
-    public List getSensorDataByDate(@Nullable Timestamp startDate, @Nullable Timestamp endDate) {
+    public List<SensorData> getSensorDataByDate(@Nullable Timestamp startDate, @Nullable Timestamp endDate) {
         try (final  Session session = sessionFactory.openSession()){
             if (startDate != null && endDate != null) {
-//                Query query = session.createSQLQuery("select * from sensor_data where record_date > " + startDate + " and " + "");
-                Query query = session.createQuery("from org.sas.model.SensorData sd where sd.recordDate between :startDate and :endDate");
+                Query query = session.createQuery("from org.sas.model.SensorData sd where sd.recordTime between :startDate and :endDate");
                 query.setParameter("startDate", startDate);
                 query.setParameter("endDate", endDate);
                 return query.list();
+            } else if (startDate == null && endDate != null) {
+                Query query = session.createQuery("from org.sas.model.SensorData sd where sd.recordTime <= :endDate");
+                query.setParameter("endDate", endDate);
+                return query.list();
+            } else if (startDate != null) {
+                Query query = session.createQuery("from org.sas.model.SensorData sd where sd.recordTime >= :startDate");
+                query.setParameter("startDate", startDate);
+                return query.list();
+            } else {
+                Query query = session.createQuery("from org.sas.model.SensorData limit");
+                query.setMaxResults(100);
+                return query.list();
             }
-            return new LinkedList<>();
         }
     }
 }
