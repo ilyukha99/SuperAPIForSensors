@@ -25,9 +25,9 @@ public class DataController {
 
         SensorDAO sensorDAO = new SensorDAO(HibernateUtils.getSessionFactory());
         SensorDataDAO sensorDataDAO = new SensorDataDAO(HibernateUtils.getSessionFactory());
-        SensorData sensorData = new SensorData(dataView.getSensorId(), sensorDAO.read(dataView.getSensorId()),
+        SensorData sensorData = new SensorData(0, sensorDAO.read(dataView.getSensorId()),
                 dataView.getValue(), dataView.getRecordTime());
-        System.out.println(sensorData);
+
         sensorDataDAO.create(sensorData);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
