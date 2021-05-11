@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 
 @RestController
-@RequestMapping("/data")
+@RequestMapping("/api/data")
 public class DataController {
     @PostMapping
     public ResponseEntity<HashMap<String, Object>> addNewData(@RequestBody SensorDataView dataView) {

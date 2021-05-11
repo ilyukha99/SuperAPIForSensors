@@ -19,7 +19,7 @@ public class SensorsController {
 
     @GetMapping("/sensors/{id}/data")
     public ResponseEntity<HashMap<String, Object>> getDataByDate(@PathVariable int id,
-            @RequestParam(required = false) @DateTimeFormat Long start,
+            @RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end) {
         HashMap<String, Object> response = new HashMap<>();
         response.put("error", "");
@@ -31,7 +31,7 @@ public class SensorsController {
         HashMap<Long, Float> responseDataList = new HashMap<>();
         for (SensorData sensorData: sensorDataList) {
             if (sensorData.getSensor().getId() == id) {
-                responseDataList.put(sensorData.getRecordTime().getTime(), sensorData.getValue());
+                responseDataList.put(sensorData.getTime().getTime(), sensorData.getValue());
             }
         }
         response.put("data", responseDataList);

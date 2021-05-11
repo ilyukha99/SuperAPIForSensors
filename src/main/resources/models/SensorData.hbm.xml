@@ -12,6 +12,6 @@
                      class="org.sas.model.Sensor"
                      cascade="save-update"/>
         <property name="value" column="value"/>
-        <property name="recordTime" column="time"/>
+        <property name="time" column="time"/>
     </class>
 </hibernate-mapping>
