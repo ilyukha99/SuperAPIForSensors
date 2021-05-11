@@ -1,9 +1,6 @@
 package org.sas.model;
 
-import org.hibernate.annotations.ManyToAny;
-
 import javax.persistence.ManyToOne;
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class House {
@@ -11,12 +8,8 @@ public class House {
     private String name;
     private String color;
 
-    // TODO: many-to-one in xml
-    @ManyToOne
+    // один юзер может иметь много домов -- many-to-one (see House.hbm.xml)
     private int userId;
-
-    private ArrayList<Room> rooms;
-
 
     public String getName() {
         return name;
@@ -49,10 +42,6 @@ public class House {
     public void setId(int id) {
         this.id = id;
     }
-
-    public void setRooms(ArrayList<Room> rooms) { this.rooms = rooms; }
-
-    public ArrayList<Room> getRooms() { return rooms; }
 
     @Override
     public boolean equals(Object o) {
