@@ -1,7 +1,5 @@
 package org.sas.model;
 
-import org.hibernate.Hibernate;
-
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -10,6 +8,13 @@ public class SensorData {
     private Sensor sensor;
     private float value;
     private Timestamp recordTime;
+
+    public SensorData(int id, Sensor sensor, float value, Timestamp recordTime) {
+        this.id = id;
+        this.sensor = sensor;
+        this.value = value;
+        this.recordTime = recordTime;
+    }
 
     public int getId() {
         return id;
@@ -39,8 +44,8 @@ public class SensorData {
         return recordTime;
     }
 
-    public void setRecordTime(Timestamp recordDate) {
-        this.recordTime = recordDate;
+    public void setRecordTime(Timestamp recordTime) {
+        this.recordTime = recordTime;
     }
 
     @Override
@@ -48,8 +53,7 @@ public class SensorData {
         if (this == o) return true;
         if (!(o instanceof SensorData)) return false;
         var sensorData = (SensorData) o;
-        Hibernate.initialize(sensor);
-        return id == sensorData.id && sensor == sensorData.sensor && value == sensorData.value
+        return id == sensorData.id && Objects.equals(sensor, sensorData.sensor) && value == sensorData.value
                 && Objects.equals(recordTime, sensorData.recordTime);
     }
 
@@ -61,8 +65,8 @@ public class SensorData {
     @Override
     public String toString() {
         return "SensorData{id=" + id +
-                ", sensorId=" + sensor.getId() +
+                ", sensor=" + sensor.getId() +
                 ", value=" + value +
-                ", recordDate=" + recordTime + '}';
+                ", recordTime=" + recordTime + '}';
     }
 }

@@ -4,13 +4,13 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping xmlns="http://www.hibernate.org/xsd/hibernate-mapping">
-    <class name="org.sas.model.User" table="users">
+    <class name="org.sas.model.User" table="Users">
         <id name="id" column="id">
             <generator class="identity"/>
         </id>
         <property name="login" column="login"/>
         <property name="password" column="password"/>
         <property name="token" column="token"/>
-        <property name="timezone" column="utc_timezone"/>
+        <property name="timeZone" column="utc_timezone"/>
     </class>
 </hibernate-mapping>

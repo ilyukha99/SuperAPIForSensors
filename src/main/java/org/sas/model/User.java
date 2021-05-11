@@ -7,7 +7,7 @@ public class User {
     private String login;
     private String password;
     private String token;
-    private int timezone;
+    private int timeZone;
 
     public int getId() {
         return id;
@@ -25,12 +25,21 @@ public class User {
         this.password = password;
     }
 
-    public int getTimezone() {
-        return timezone;
+    public int getTimeZone() {
+        return timeZone;
     }
 
-    public void setTimezone(int timezone) {
-        this.timezone = timezone;
+    @Override
+    public String toString() {
+        return "User{id=" + id +
+                ", login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                ", token='" + token + '\'' +
+                ", timeZone=" + timeZone + '}';
+    }
+
+    public void setTimeZone(int timezone) {
+        this.timeZone = timezone;
     }
 
     public String getLogin() {
@@ -54,12 +63,12 @@ public class User {
         if (this == o) return true;
         if (!(o instanceof User)) return false;
         User user = (User) o;
-        return id == user.id && timezone == user.timezone && Objects.equals(login, user.login)
+        return id == user.id && timeZone == user.timeZone && Objects.equals(login, user.login)
                 && Objects.equals(password, user.password) && Objects.equals(token, user.token);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, login, password, token, timezone);
+        return Objects.hash(id, login, password, token, timeZone);
     }
 }

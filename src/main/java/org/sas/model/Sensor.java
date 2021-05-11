@@ -44,8 +44,8 @@ public class Sensor {
     public String toString() {
         return "Sensor{id=" + id +
                 ", name='" + name + '\'' +
-                ", type=" + type.getName() +
-                ", user=" + user.getLogin() + '}';
+                ", type=" + type.getId() +
+                ", user=" + user.getId() + '}';
     }
 
     @Override

@@ -12,7 +12,7 @@ public class UserDAOTest {
     private UserDAO userDAO;
     private SessionFactory sessionFactory;
     private final User testUser = new User();
-    private final Integer primaryKey = 100500;
+    private int primaryKey;
 
     @Before
     public void doBefore() {
@@ -20,7 +20,7 @@ public class UserDAOTest {
         userDAO = new UserDAO(sessionFactory);
         testUser.setToken("qwerty");
         testUser.setPassword("12345");
-        testUser.setTimezone(18);
+        testUser.setTimeZone(18);
         testUser.setLogin("test");
     }
 
@@ -38,8 +38,8 @@ public class UserDAOTest {
      */
     @Test
     public void checkCreatedUser() {
-        int id = userDAO.create(testUser);
-        final User user = userDAO.read(id);
+        primaryKey = userDAO.create(testUser);
+        final User user = userDAO.read(primaryKey);
         assertNotNull(user);
         assertEquals(user, testUser);
     }
@@ -49,11 +49,11 @@ public class UserDAOTest {
      */
     @Test
     public void checkDeletions() {
-        int id = userDAO.create(testUser);
-        final User userBeforeDeletion = userDAO.read(id);
+        primaryKey = userDAO.create(testUser);
+        final User userBeforeDeletion = userDAO.read(primaryKey);
         assertNotNull(userBeforeDeletion);
         userDAO.delete(testUser);
-        final User userAfterDeletion = userDAO.read(id);
+        final User userAfterDeletion = userDAO.read(primaryKey);
         assertNull(userAfterDeletion);
     }
 
@@ -62,11 +62,11 @@ public class UserDAOTest {
      */
     @Test
     public void checkUpdates() {
-        int id = userDAO.create(testUser);
+        primaryKey = userDAO.create(testUser);
         testUser.setLogin("NewLogin");
         testUser.setPassword("NewPassword");
         userDAO.update(testUser);
-        final User user = userDAO.read(id);
+        final User user = userDAO.read(primaryKey);
         assertNotNull(user);
         assertTrue(user.getLogin().equals("NewLogin") && user.getPassword().equals("NewPassword"));
     }
