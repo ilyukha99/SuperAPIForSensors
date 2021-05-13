@@ -1,6 +1,5 @@
 package org.sas.model;
 
-import javax.persistence.ManyToOne;
 import java.util.Objects;
 
 public class House {
@@ -9,7 +8,11 @@ public class House {
     private String color;
 
     // один юзер может иметь много домов -- many-to-one (see House.hbm.xml)
-    private int userId;
+    private User userId;
+
+    public User getUserId() { return userId; }
+
+    public void setUserId(User userId) { this.userId = userId; }
 
     public String getName() {
         return name;
@@ -17,14 +20,6 @@ public class House {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
     public String getColor() {

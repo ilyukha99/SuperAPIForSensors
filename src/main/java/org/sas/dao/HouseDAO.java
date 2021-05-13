@@ -5,6 +5,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.sas.model.House;
+import org.sas.model.User;
+import org.sas.utils.HibernateUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -58,24 +60,14 @@ public class HouseDAO implements DAO<House, Integer> {
         }
     }
 
-    public List<House> getHousesList(@NonNull int user_id) {
+public List<House> getHousesList(@NonNull int user_id) {
+        UserDAO userDAO = new UserDAO(HibernateUtils.getSessionFactory());
+        User user = userDAO.read(user_id);
         try (final Session session = sessionFactory.openSession()) {
             Query<House> query = session.createQuery(
-                    "select h.id from org.sas.model.House h where h.userId = :userId", House.class);
-            query.setParameter("userId", user_id);
+                    "from org.sas.model.House h where h.userId = :userId", House.class);
+            query.setParameter("userId", user);
             return query.list();
         }
     }
-
-
-//    public House getHouseById(@NonNull int user_id, @NonNull int house_id) {
-//        try (final Session session = sessionFactory.openSession()) {
-//            Query<House> query = session.createQuery(
-//                    "from org.sas.model.House h where h.userId = :userId and h.id = :houseId",
-//                    House.class);
-//            query.setParameter("userId", user_id);
-//            query.setParameter("houseId", house_id);
-//            return query.getSingleResult();
-//        }
-//    }
 }

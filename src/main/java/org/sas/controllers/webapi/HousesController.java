@@ -1,7 +1,9 @@
 package org.sas.controllers.webapi;
 
 import org.sas.dao.HouseDAO;
+import org.sas.dao.UserDAO;
 import org.sas.model.House;
+import org.sas.model.User;
 import org.sas.utils.HibernateUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +17,7 @@ import java.util.HashMap;
 public class HousesController {
 
     // TODO: здесь получаем user_id из куки
-    private Integer getUserIdFromCookie() { return 0; }
+    private Integer getUserIdFromCookie() { return 1; }
 
     @GetMapping("/houses")
     public ResponseEntity<HashMap<String, Object>> getUserHouses()
@@ -31,9 +33,14 @@ public class HousesController {
         }
 
         HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
-        ArrayList<House> housesList = (ArrayList<House>) houseDAO.getHousesList(user_id);
 
-        response.put("houses", housesList);
+        ArrayList<House> housesList = (ArrayList<House>) houseDAO.getHousesList(user_id);
+        ArrayList<Integer> resp = new ArrayList<>();
+
+        for (House house : housesList) {
+            resp.add(house.getId());
+        }
+        response.put("houses", resp);
 
         response.put("error", "");
         response.put("code", 0);
@@ -42,7 +49,7 @@ public class HousesController {
 
     @GetMapping("/houses/{house_id}")
     public ResponseEntity<HashMap<String, Object>> getUserHouseById(
-            @PathVariable @RequestParam int house_id
+            @PathVariable Integer house_id
     ) {
         Integer user_id = getUserIdFromCookie();
 
@@ -55,7 +62,6 @@ public class HousesController {
         }
 
         HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
-
         House house = houseDAO.read(house_id);
 
         if (house == null) {
@@ -73,10 +79,11 @@ public class HousesController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-
+    // EXAMPLE: http://localhost:8081/houses?name=temp_02&color=orange
     @PostMapping("/houses")
     public ResponseEntity<HashMap<String, Object>> createHouse (
-            @RequestParam String house_name, @RequestParam String house_color
+            @RequestParam(value = "name", required=false) String house_name,
+            @RequestParam(value = "color", required=false) String house_color
     ) {
         Integer user_id = getUserIdFromCookie();
 
@@ -87,11 +94,13 @@ public class HousesController {
             response.put("code", 1);
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
         }
+        UserDAO userDAO = new UserDAO(HibernateUtils.getSessionFactory());
+        User user = userDAO.read(user_id);
 
         House new_house = new House();
         new_house.setName(house_name);
         new_house.setColor(house_color);
-        new_house.setUserId(user_id);
+        new_house.setUserId(user);
 
         HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
         houseDAO.create(new_house);
@@ -103,7 +112,7 @@ public class HousesController {
 
     @DeleteMapping("/houses/{house_id}")
     public ResponseEntity<HashMap<String, Object>> deleteHouse(
-            @PathVariable @RequestParam int house_id
+            @PathVariable Integer house_id
     ) {
         Integer user_id = getUserIdFromCookie();
 
@@ -134,9 +143,9 @@ public class HousesController {
 
     @PutMapping("/houses/{house_id}")
     public ResponseEntity<HashMap<String, Object>> editHouse(
-            @PathVariable @RequestParam int house_id,
-            @RequestParam String color,
-            @RequestParam String name
+            @PathVariable Integer house_id,
+            @RequestParam(value = "color", required = false)  String color,
+            @RequestParam(value = "name", required = false)  String name
     ) {
         Integer user_id = getUserIdFromCookie();
 
@@ -157,8 +166,13 @@ public class HousesController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
-        edit_house.setName(name);
-        edit_house.setColor(color);
+        if (name != null) {
+            edit_house.setName(name);
+        }
+        if (color != null) {
+            edit_house.setColor(color);
+        }
+
         houseDAO.update(edit_house);
 
         response.put("error", "");
