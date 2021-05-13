@@ -1,11 +1,14 @@
 package org.sas.model;
 
+import javax.persistence.ManyToOne;
 import java.util.Objects;
 
 public class House {
     private int id;
     private String name;
     private String color;
+
+    // один юзер может иметь много домов -- many-to-one (see House.hbm.xml)
     private int userId;
 
     public String getName() {
