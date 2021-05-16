@@ -1,0 +1,182 @@
+package org.sas.controllers.webapi;
+
+import org.sas.dao.HouseDAO;
+import org.sas.dao.UserDAO;
+import org.sas.model.House;
+import org.sas.model.User;
+import org.sas.utils.HibernateUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+@Controller
+public class HousesController {
+
+    // TODO: здесь получаем user_id из куки
+    private Integer getUserIdFromCookie() { return 1; }
+
+    @GetMapping("/houses")
+    public ResponseEntity<HashMap<String, Object>> getUserHouses()
+    {
+        Integer user_id = getUserIdFromCookie();
+
+        HashMap<String, Object> response = new HashMap<>();
+
+        if (user_id == null) {
+            response.put("error", "unauthorized user");
+            response.put("code", 1);
+            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        }
+
+        HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
+
+        ArrayList<House> housesList = (ArrayList<House>) houseDAO.getHousesList(user_id);
+        ArrayList<Integer> resp = new ArrayList<>();
+
+        for (House house : housesList) {
+            resp.add(house.getId());
+        }
+        response.put("houses", resp);
+
+        response.put("error", "");
+        response.put("code", 0);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/houses/{house_id}")
+    public ResponseEntity<HashMap<String, Object>> getUserHouseById(
+            @PathVariable Integer house_id
+    ) {
+        Integer user_id = getUserIdFromCookie();
+
+        HashMap<String, Object> response = new HashMap<>();
+
+        if (user_id == null) {
+            response.put("error", "unauthorized user");
+            response.put("code", 1);
+            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        }
+
+        HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
+        House house = houseDAO.read(house_id);
+
+        if (house == null) {
+            response.put("error", String.format("house with id %d does not exist", house_id));
+            response.put("code", 1);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        response.put("error", "");
+        response.put("code", 0);
+
+        response.put("house_name", house.getName());
+        response.put("house_color", house.getColor());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // EXAMPLE: http://localhost:8081/houses?name=temp_02&color=orange
+    @PostMapping("/houses")
+    public ResponseEntity<HashMap<String, Object>> createHouse (
+            @RequestParam(value = "name", required=false) String house_name,
+            @RequestParam(value = "color", required=false) String house_color
+    ) {
+        Integer user_id = getUserIdFromCookie();
+
+        HashMap<String, Object> response = new HashMap<>();
+
+        if (user_id == null) {
+            response.put("error", "unauthorized user");
+            response.put("code", 1);
+            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        }
+        UserDAO userDAO = new UserDAO(HibernateUtils.getSessionFactory());
+        User user = userDAO.read(user_id);
+
+        House new_house = new House();
+        new_house.setName(house_name);
+        new_house.setColor(house_color);
+        new_house.setUserId(user);
+
+        HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
+        houseDAO.create(new_house);
+
+        response.put("error", "");
+        response.put("code", 0);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/houses/{house_id}")
+    public ResponseEntity<HashMap<String, Object>> deleteHouse(
+            @PathVariable Integer house_id
+    ) {
+        Integer user_id = getUserIdFromCookie();
+
+        HashMap<String, Object> response = new HashMap<>();
+
+        if (user_id == null) {
+            response.put("error", "unauthorized user");
+            response.put("code", 1);
+            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        }
+
+        HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
+        House del_house = houseDAO.read(house_id);
+
+        if (del_house == null) {
+            response.put("error", String.format("house with id %d does not exist", house_id));
+            response.put("code", 1);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        houseDAO.delete(del_house);
+
+        response.put("error", "");
+        response.put("code", 0);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+    @PutMapping("/houses/{house_id}")
+    public ResponseEntity<HashMap<String, Object>> editHouse(
+            @PathVariable Integer house_id,
+            @RequestParam(value = "color", required = false)  String color,
+            @RequestParam(value = "name", required = false)  String name
+    ) {
+        Integer user_id = getUserIdFromCookie();
+
+        HashMap<String, Object> response = new HashMap<>();
+
+        if (user_id == null) {
+            response.put("error", "unauthorized user");
+            response.put("code", 1);
+            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        }
+
+        HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
+        House edit_house = houseDAO.read(house_id);
+
+        if (edit_house == null) {
+            response.put("error", String.format("house with id %d does not exist", house_id));
+            response.put("code", 1);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        if (name != null) {
+            edit_house.setName(name);
+        }
+        if (color != null) {
+            edit_house.setColor(color);
+        }
+
+        houseDAO.update(edit_house);
+
+        response.put("error", "");
+        response.put("code", 0);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+}

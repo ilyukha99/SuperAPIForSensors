@@ -6,7 +6,13 @@ public class House {
     private int id;
     private String name;
     private String color;
-    private int userId;
+
+    // один юзер может иметь много домов -- many-to-one (see House.hbm.xml)
+    private User userId;
+
+    public User getUserId() { return userId; }
+
+    public void setUserId(User userId) { this.userId = userId; }
 
     public String getName() {
         return name;
@@ -14,14 +20,6 @@ public class House {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
     public String getColor() {
