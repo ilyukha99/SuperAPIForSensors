@@ -16,6 +16,8 @@ public class SensorData {
         this.recordTime = recordTime;
     }
 
+    public SensorData() {}
+
     public int getId() {
         return id;
     }
