@@ -78,8 +78,9 @@ public class SensorDataDAO  implements DAO<SensorData, Integer>{
                 query.setParameter("startDate", new Timestamp(startDate));
                 return query.list();
             } else {
-                Query<SensorData> query = session.createQuery("from org.sas.model.SensorData limit",
+                Query<SensorData> query = session.createQuery("from org.sas.model.SensorData",
                         SensorData.class);
+                query.setMaxResults(100);
                 return query.list();
             }
         }
