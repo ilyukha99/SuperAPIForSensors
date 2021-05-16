@@ -26,6 +26,8 @@ create table if not exists SensorData (
     time timestamp not null
 );
 
+alter table users add constraint login_uniqueness unique (login);
+
 insert into Users (login, password, token, utc_timezone) values('Nek', 'drozd1337', 'abcabc', 7);
 insert into Users (login, password, token, utc_timezone) values('Vlad', 'teamlead', 'abcabc1', 7);
 

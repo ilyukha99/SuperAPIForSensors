@@ -18,6 +18,8 @@ public class SensorData {
         this.time = time;
     }
 
+    public SensorData() {}
+
     public int getId() {
         return id;
     }

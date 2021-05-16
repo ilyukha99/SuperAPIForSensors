@@ -2,3 +2,4 @@
 .idea
 target
 hibernate.cfg.xml
+application.properties
