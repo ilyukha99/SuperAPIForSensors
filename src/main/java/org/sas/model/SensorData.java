@@ -7,15 +7,13 @@ public class SensorData {
     private int id;
     private Sensor sensor;
     private float value;
-    private Timestamp time;
+    private Timestamp recordTime;
 
-    public SensorData() {}
-
-    public SensorData(int id, Sensor sensor, float value, Timestamp time) {
+    public SensorData(int id, Sensor sensor, float value, Timestamp recordTime) {
         this.id = id;
         this.sensor = sensor;
         this.value = value;
-        this.time = time;
+        this.recordTime = recordTime;
     }
 
     public int getId() {
@@ -42,12 +40,12 @@ public class SensorData {
         this.value = value;
     }
 
-    public Timestamp getTime() {
-        return time;
+    public Timestamp getRecordTime() {
+        return recordTime;
     }
 
-    public void setTime(Timestamp time) {
-        this.time = time;
+    public void setRecordTime(Timestamp recordTime) {
+        this.recordTime = recordTime;
     }
 
     @Override
@@ -56,12 +54,12 @@ public class SensorData {
         if (!(o instanceof SensorData)) return false;
         var sensorData = (SensorData) o;
         return id == sensorData.id && Objects.equals(sensor, sensorData.sensor) && value == sensorData.value
-                && Objects.equals(time, sensorData.time);
+                && Objects.equals(recordTime, sensorData.recordTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, sensor.getId(), value, time);
+        return Objects.hash(id, sensor.getId(), value, recordTime);
     }
 
     @Override
@@ -69,6 +67,6 @@ public class SensorData {
         return "SensorData{id=" + id +
                 ", sensor=" + sensor.getId() +
                 ", value=" + value +
-                ", time=" + time + '}';
+                ", recordTime=" + recordTime + '}';
     }
 }

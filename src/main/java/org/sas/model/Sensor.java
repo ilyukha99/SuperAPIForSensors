@@ -8,6 +8,17 @@ public class Sensor {
     private SensorType type;
     private User user;
 
+    // одна комната может иметь много сенсоров -- many-to-one (see Sensor.hbm.xml)
+    private Room roomId;
+
+    public Room getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(Room roomId) {
+        this.roomId = roomId;
+    }
+
     public int getId() {
         return id;
     }

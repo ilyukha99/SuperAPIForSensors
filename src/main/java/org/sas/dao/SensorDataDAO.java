@@ -63,24 +63,23 @@ public class SensorDataDAO  implements DAO<SensorData, Integer>{
         try (final  Session session = sessionFactory.openSession()){
             if (startDate != null && endDate != null) {
                 Query<SensorData> query = session.createQuery("from org.sas.model.SensorData sd where " +
-                        "sd.time between :startDate and :endDate", SensorData.class);
+                        "sd.recordTime between :startDate and :endDate", SensorData.class);
                 query.setParameter("startDate", new Timestamp(startDate));
                 query.setParameter("endDate", new Timestamp(endDate));
                 return query.list();
             } else if (startDate == null && endDate != null) {
                 Query<SensorData> query = session.createQuery("from org.sas.model.SensorData sd where " +
-                        "sd.time <= :endDate", SensorData.class);
+                        "sd.recordTime <= :endDate", SensorData.class);
                 query.setParameter("endDate",  new Timestamp(endDate));
                 return query.list();
             } else if (startDate != null) {
                 Query<SensorData> query = session.createQuery("from org.sas.model.SensorData sd where " +
-                        "sd.time >= :startDate", SensorData.class);
+                        "sd.recordTime >= :startDate", SensorData.class);
                 query.setParameter("startDate", new Timestamp(startDate));
                 return query.list();
             } else {
-                Query<SensorData> query = session.createQuery("from org.sas.model.SensorData",
+                Query<SensorData> query = session.createQuery("from org.sas.model.SensorData limit",
                         SensorData.class);
-                query.setMaxResults(100);
                 return query.list();
             }
         }
