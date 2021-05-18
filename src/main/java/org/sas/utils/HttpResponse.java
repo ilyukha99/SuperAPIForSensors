@@ -26,6 +26,10 @@ public class HttpResponse {
         response.put("error", errorMessage);
     }
 
+    public void putElement(String key, Object object) {
+        response.put(key, object);
+    }
+
     @Override
     public String toString() {
         return response.toString();

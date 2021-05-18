@@ -1,11 +1,14 @@
 package org.sas.dao;
 
 import org.hibernate.Hibernate;
+import org.hibernate.query.Query;
 import org.springframework.lang.NonNull;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.sas.model.Sensor;
 import org.springframework.lang.Nullable;
+
+import java.util.List;
 
 public class SensorDAO implements DAO<Sensor, Integer> {
     private final SessionFactory sessionFactory;
@@ -52,6 +55,15 @@ public class SensorDAO implements DAO<Sensor, Integer> {
             session.beginTransaction();
             session.delete(sensor);
             session.getTransaction().commit();
+        }
+    }
+
+    public List<Sensor> getSensorsByHouseAndRoom(@NonNull int houseId, @NonNull int roomId) {
+        try (final Session session = sessionFactory.getCurrentSession()) {
+            Query<Sensor> query = session.createQuery("from org.sas.model.Sensor sen " +
+                    "where sen.room like :rid", Sensor.class);
+            query.setParameter("rid", roomId);
+            return query.list();
         }
     }
 }

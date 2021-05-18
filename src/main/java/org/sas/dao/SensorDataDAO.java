@@ -60,7 +60,7 @@ public class SensorDataDAO  implements DAO<SensorData, Integer>{
 
     @NonNull
     public List<SensorData> getSensorDataByDate(@Nullable Long startDate, @Nullable Long endDate) {
-        try (final  Session session = sessionFactory.openSession()){
+        try (final Session session = sessionFactory.openSession()){
             if (startDate != null && endDate != null) {
                 Query<SensorData> query = session.createQuery("from org.sas.model.SensorData sd where " +
                         "sd.time between :startDate and :endDate", SensorData.class);
