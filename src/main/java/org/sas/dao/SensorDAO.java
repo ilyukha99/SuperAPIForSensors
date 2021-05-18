@@ -2,6 +2,9 @@ package org.sas.dao;
 
 import org.hibernate.Hibernate;
 import org.hibernate.query.Query;
+import org.sas.model.Room;
+import org.sas.utils.HibernateUtils;
+import org.hibernate.query.Query;
 import org.springframework.lang.NonNull;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -63,6 +66,17 @@ public class SensorDAO implements DAO<Sensor, Integer> {
             Query<Sensor> query = session.createQuery("from org.sas.model.Sensor sen " +
                     "where sen.room like :rid", Sensor.class);
             query.setParameter("rid", roomId);
+            return query.list();
+        }
+    }
+
+    public List<Sensor> getSensorsList(Integer room_id) {
+        RoomDAO roomDAO = new RoomDAO(HibernateUtils.getSessionFactory());
+        Room room = roomDAO.read(room_id);
+        try (final Session session = sessionFactory.openSession()) {
+            Query<Sensor> query = session.createQuery(
+                    "from org.sas.model.Sensor s where s.roomId = :roomId", Sensor.class);
+            query.setParameter("roomId", room);
             return query.list();
         }
     }
