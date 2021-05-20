@@ -6,9 +6,10 @@ import org.sas.dao.SensorDAO;
 import org.sas.model.House;
 import org.sas.model.Room;
 import org.sas.model.Sensor;
-import org.sas.utils.HibernateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,17 @@ import java.util.HashMap;
 
 @Controller
 public class RoomsController {
+    private final HouseDAO houseDAO;
+    private final RoomDAO roomDAO;
+    private final SensorDAO sensorDAO;
+
+    @Autowired
+    public RoomsController(@NonNull HouseDAO houseDAO, @NonNull RoomDAO roomDAO,
+                           @NonNull SensorDAO sensorDAO) {
+        this.houseDAO = houseDAO;
+        this.roomDAO = roomDAO;
+        this.sensorDAO = sensorDAO;
+    }
 
     // TODO: здесь получаем user_id из куки
     private Integer getUserIdFromCookie() { return 1; }
@@ -37,7 +49,6 @@ public class RoomsController {
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
         }
 
-        HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
         House house = houseDAO.read(house_id);
 
         // check if house exists
@@ -47,7 +58,6 @@ public class RoomsController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
-        RoomDAO roomDAO = new RoomDAO(HibernateUtils.getSessionFactory());
 
         ArrayList<Room> roomsList = (ArrayList<Room>) roomDAO.getRoomsList(house_id);
         ArrayList<Integer> resp = new ArrayList<>();
@@ -78,7 +88,6 @@ public class RoomsController {
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
         }
 
-        HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
         House house = houseDAO.read(house_id);
 
         // check if house exists
@@ -88,7 +97,6 @@ public class RoomsController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
-        RoomDAO roomDAO = new RoomDAO(HibernateUtils.getSessionFactory());
         Room room = roomDAO.read(room_id);
 
         // check if room exists
@@ -104,8 +112,6 @@ public class RoomsController {
             response.put("code", 1);
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
         }
-
-        SensorDAO sensorDAO = new SensorDAO(HibernateUtils.getSessionFactory());
 
         ArrayList<Sensor> sensorsList = (ArrayList<Sensor>) sensorDAO.getSensorsList(room_id);
         ArrayList<Integer> resp = new ArrayList<>();
@@ -141,7 +147,6 @@ public class RoomsController {
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
         }
 
-        HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
         House house = houseDAO.read(house_id);
 
         // check if house exists
@@ -156,7 +161,6 @@ public class RoomsController {
         new_room.setColor(room_color);
         new_room.setHouseId(house);
 
-        RoomDAO roomDAO = new RoomDAO(HibernateUtils.getSessionFactory());
         roomDAO.create(new_room);
 
         response.put("error", "");
@@ -179,7 +183,6 @@ public class RoomsController {
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
         }
 
-        HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
         House house = houseDAO.read(house_id);
 
         if (house == null) {
@@ -188,7 +191,6 @@ public class RoomsController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
-        RoomDAO roomDAO = new RoomDAO(HibernateUtils.getSessionFactory());
         Room del_room = roomDAO.read(room_id);
 
         // check if room exists
@@ -229,7 +231,6 @@ public class RoomsController {
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
         }
 
-        HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
         House edit_house = houseDAO.read(house_id);
 
         if (edit_house == null) {
@@ -238,7 +239,6 @@ public class RoomsController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
-        RoomDAO roomDAO = new RoomDAO(HibernateUtils.getSessionFactory());
         Room edit_room = roomDAO.read(room_id);
 
         // check if room exists

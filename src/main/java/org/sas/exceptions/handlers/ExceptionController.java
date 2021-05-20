@@ -1,6 +1,6 @@
 package org.sas.exceptions.handlers;
 
-import org.sas.utils.HttpResponse;
+import org.sas.responses.HttpResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
