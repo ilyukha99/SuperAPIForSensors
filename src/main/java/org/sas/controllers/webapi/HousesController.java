@@ -4,9 +4,10 @@ import org.sas.dao.HouseDAO;
 import org.sas.dao.UserDAO;
 import org.sas.model.House;
 import org.sas.model.User;
-import org.sas.utils.HibernateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,14 @@ import java.util.HashMap;
 
 @Controller
 public class HousesController {
+    private final HouseDAO houseDAO;
+    private final UserDAO userDAO;
+
+    @Autowired
+    public HousesController(@NonNull HouseDAO houseDAO, @NonNull UserDAO userDAO) {
+        this.houseDAO = houseDAO;
+        this.userDAO = userDAO;
+    }
 
     // TODO: здесь получаем user_id из куки
     private Integer getUserIdFromCookie() { return 1; }
@@ -31,8 +40,6 @@ public class HousesController {
             response.put("code", 1);
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
         }
-
-        HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
 
         ArrayList<House> housesList = (ArrayList<House>) houseDAO.getHousesList(user_id);
         ArrayList<Integer> resp = new ArrayList<>();
@@ -61,7 +68,6 @@ public class HousesController {
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
         }
 
-        HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
         House house = houseDAO.read(house_id);
 
         if (house == null) {
@@ -94,7 +100,6 @@ public class HousesController {
             response.put("code", 1);
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
         }
-        UserDAO userDAO = new UserDAO(HibernateUtils.getSessionFactory());
         User user = userDAO.read(user_id);
 
         House new_house = new House();
@@ -102,7 +107,6 @@ public class HousesController {
         new_house.setColor(house_color);
         new_house.setUserId(user);
 
-        HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
         houseDAO.create(new_house);
 
         response.put("error", "");
@@ -124,7 +128,6 @@ public class HousesController {
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
         }
 
-        HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
         House del_house = houseDAO.read(house_id);
 
         if (del_house == null) {
@@ -157,7 +160,6 @@ public class HousesController {
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
         }
 
-        HouseDAO houseDAO = new HouseDAO(HibernateUtils.getSessionFactory());
         House edit_house = houseDAO.read(house_id);
 
         if (edit_house == null) {

@@ -1,8 +1,10 @@
-package org.sas.security;
+package org.sas.security.jwt;
 
 import org.sas.model.User;
 import org.sas.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -23,19 +25,25 @@ import java.util.Collections;
 public class JwtFilter extends GenericFilterBean {
     private static final String AUTHORIZATION = "Authorization";
 
-    @Autowired
-    private JwtProvider jwtProvider;
+    private final JwtProvider jwtProvider;
+    private final UserService userService;
 
     @Autowired
-    private UserService userService;
+    public JwtFilter(@NonNull JwtProvider jwtProvider, @NonNull @Lazy UserService userService) {
+        this.jwtProvider = jwtProvider;
+        this.userService = userService;
+    }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws ServletException, IOException {
-        //logger.info("do filtering...");
-        String token = getTokenFromRequest((HttpServletRequest)servletRequest);
-        if (token != null && jwtProvider.isTokenValid(token)) {
+        String token = getUserTokenFromRequest((HttpServletRequest)servletRequest);
+        if (token != null) {
             String userLogin = jwtProvider.getLoginFromToken(token);
+            if (userLogin == null) {
+                filterChain.doFilter(servletRequest, servletResponse);
+                return;
+            }
             User user = userService.findByLogin(userLogin);
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
@@ -44,7 +52,7 @@ public class JwtFilter extends GenericFilterBean {
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
-    public String getTokenFromRequest(HttpServletRequest httpRequest) {
+    public String getUserTokenFromRequest(HttpServletRequest httpRequest) {
         String bearer = httpRequest.getHeader(AUTHORIZATION);
         if (StringUtils.hasText(bearer) && bearer.startsWith("Bearer ")) {
             return bearer.substring(7);

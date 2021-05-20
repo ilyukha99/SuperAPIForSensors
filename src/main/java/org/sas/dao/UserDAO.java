@@ -1,16 +1,21 @@
 package org.sas.dao;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.sas.model.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
+import org.hibernate.query.Query;
 
+@Component
 public class UserDAO implements DAO<User, Integer> {
     private final SessionFactory sessionFactory;
 
-    public UserDAO(@NonNull final SessionFactory factory) {
-        sessionFactory = factory;
+    @Autowired
+    public UserDAO(@NonNull SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
@@ -46,6 +51,42 @@ public class UserDAO implements DAO<User, Integer> {
             session.beginTransaction();
             session.delete(user);
             session.getTransaction().commit();
+        }
+    }
+
+    public boolean tokenExists(@NonNull String userToken) {
+        try(Session session = sessionFactory.openSession()) {
+            Query<User> query = session.createQuery("from org.sas.model.User user" +
+                    " where user.token = :token", User.class);
+            query.setParameter("token", userToken);
+            return !query.list().isEmpty();
+        }
+    }
+
+    public boolean loginExists(@NonNull String login) {
+        try(Session session = sessionFactory.openSession()) {
+            Query<User> query = session.createQuery("from org.sas.model.User user" +
+                    " where user.login = :login", User.class);
+            query.setParameter("login", login);
+            return !query.list().isEmpty();
+        }
+    }
+
+    public boolean sensorTokenExists(@NonNull String sensorToken) {
+        try(Session session = sessionFactory.openSession()) {
+            Query<User> query = session.createQuery("from org.sas.model.User user" +
+                    " where user.sensorToken = :sensorToken", User.class);
+            query.setParameter("sensorToken", sensorToken);
+            return !query.list().isEmpty();
+        }
+    }
+
+    public User findByLogin(String login) {
+        try(Session session = sessionFactory.openSession()) {
+            Query<User> query = session.createQuery("from org.sas.model.User user" +
+                    " where user.login = :login", User.class);
+            query.setParameter("login", login);
+            return query.list().get(0);
         }
     }
 }

@@ -10,13 +10,12 @@ import static org.junit.Assert.*;
 
 public class UserDAOTest {
     private UserDAO userDAO;
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
     private final User testUser = new User();
     private int primaryKey;
 
     @Before
     public void doBefore() {
-        sessionFactory = new Configuration().configure().buildSessionFactory();
         userDAO = new UserDAO(sessionFactory);
         testUser.setToken("qwerty");
         testUser.setPassword("12345");
@@ -29,7 +28,6 @@ public class UserDAOTest {
         if (userDAO.read(primaryKey) != null) {
             userDAO.delete(testUser);
         }
-        sessionFactory.close();
     }
 
     /**

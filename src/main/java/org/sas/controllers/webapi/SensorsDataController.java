@@ -2,9 +2,10 @@ package org.sas.controllers.webapi;
 
 import org.sas.dao.SensorDataDAO;
 import org.sas.model.SensorData;
-import org.sas.utils.HibernateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,12 @@ import java.util.HashMap;
 
 @Controller
 public class SensorsDataController {
+    private final SensorDataDAO sensorDataDAO;
+
+    @Autowired
+    public SensorsDataController(@NonNull SensorDataDAO sensorDataDAO) {
+        this.sensorDataDAO = sensorDataDAO;
+    }
 
     @GetMapping("/sensors/{id}/data")
     public ResponseEntity<HashMap<String, Object>> getDataByDate(@PathVariable int id,
@@ -24,7 +31,6 @@ public class SensorsDataController {
         response.put("error", "");
         response.put("code", 0);
 
-        SensorDataDAO sensorDataDAO = new SensorDataDAO(HibernateUtils.getSessionFactory());
         ArrayList<SensorData> sensorDataList =
                 (ArrayList<SensorData>) sensorDataDAO.getSensorDataByDate(start, end);
         HashMap<Long, Float> responseDataList = new HashMap<>();

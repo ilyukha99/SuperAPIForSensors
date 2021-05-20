@@ -1,6 +1,6 @@
 create table if not exists Users (
     id serial primary key,
-    login text not null,
+    login text not null unique,
     password text not null,
     token text not null,
     utc_timezone smallint check(utc_timezone >= 0 and utc_timezone < 24)

@@ -6,18 +6,26 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.sas.model.House;
 import org.sas.model.User;
-import org.sas.utils.HibernateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class HouseDAO implements DAO<House, Integer> {
-
     private final SessionFactory sessionFactory;
+    private UserDAO userDAO;
 
+    @Autowired
     public HouseDAO(@NonNull final SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
+    }
+
+    @Autowired
+    public void setUserDAO(@NonNull UserDAO userDAO) {
+        this.userDAO = userDAO;
     }
 
     @Override
@@ -60,9 +68,8 @@ public class HouseDAO implements DAO<House, Integer> {
         }
     }
 
-public List<House> getHousesList(@NonNull int user_id) {
-        UserDAO userDAO = new UserDAO(HibernateUtils.getSessionFactory());
-        User user = userDAO.read(user_id);
+public List<House> getHousesList(@NonNull int userId) {
+        User user = userDAO.read(userId);
         try (final Session session = sessionFactory.openSession()) {
             Query<House> query = session.createQuery(
                     "from org.sas.model.House h where h.userId = :userId", House.class);
