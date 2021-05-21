@@ -62,9 +62,9 @@ public class SensorDAO implements DAO<Sensor, Integer> {
     }
 
     public List<Sensor> getSensorsByHouseAndRoom(@NonNull int houseId, @NonNull int roomId) {
-        try (final Session session = sessionFactory.getCurrentSession()) {
+        try (final Session session = sessionFactory.openSession()) {
             Query<Sensor> query = session.createQuery("from org.sas.model.Sensor sen " +
-                    "where sen.room like :rid", Sensor.class);
+                    "where sen.roomId.id = :rid", Sensor.class);
             query.setParameter("rid", roomId);
             return query.list();
         }
