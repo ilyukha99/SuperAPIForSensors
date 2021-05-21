@@ -11,6 +11,7 @@
         <property name="login" column="login"/>
         <property name="password" column="password"/>
         <property name="token" column="token"/>
+        <property name="sensorToken" column="sensor_token"/>
         <property name="timeZone" column="utc_timezone"/>
     </class>
 </hibernate-mapping>

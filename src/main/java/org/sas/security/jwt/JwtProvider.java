@@ -1,4 +1,4 @@
-package org.sas.security;
+package org.sas.security.jwt;
 
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,8 +15,8 @@ public class JwtProvider {
     private String jwtSecret;
     private final Logger logger = Logger.getLogger(JwtProvider.class.getName());
 
-    public String generateToken(String userLogin) {
-        Date date = Date.from(LocalDate.now().plusDays(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
+    public String generateToken(String userLogin, int tokenDurability) {
+        Date date = Date.from(LocalDate.now().plusDays(tokenDurability).atStartOfDay(ZoneId.systemDefault()).toInstant());
         return Jwts.builder()
                 .setSubject(userLogin)
                 .setExpiration(date)
@@ -24,10 +24,9 @@ public class JwtProvider {
                 .compact();
     }
 
-    public boolean isTokenValid(String token) {
+    public String getLoginFromToken(String token) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
-            return true;
+            return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
         }
         catch (UnsupportedJwtException unsupportedJwtException) {
             logger.severe("JwtProvider isTokenValid(): argument does not represent an Claims JWS. " +
@@ -49,10 +48,6 @@ public class JwtProvider {
             logger.severe("JwtProvider isTokenValid(): string is null or empty or only whitespace. " +
                     illegalArgumentException.getMessage());
         }
-        return false;
-    }
-
-    public String getLoginFromToken(String token) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+        return null;
     }
 }

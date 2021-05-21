@@ -11,8 +11,7 @@ public class SensorData {
 
     public SensorData() {}
 
-    public SensorData(int id, Sensor sensor, float value, Timestamp time) {
-        this.id = id;
+    public SensorData(Sensor sensor, float value, Timestamp time) {
         this.sensor = sensor;
         this.value = value;
         this.time = time;

@@ -3,21 +3,29 @@ package org.sas.dao;
 import org.hibernate.Hibernate;
 import org.hibernate.query.Query;
 import org.sas.model.Room;
-import org.sas.utils.HibernateUtils;
-import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.sas.model.Sensor;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class SensorDAO implements DAO<Sensor, Integer> {
     private final SessionFactory sessionFactory;
+    private RoomDAO roomDAO;
 
+    @Autowired
     public SensorDAO(@NonNull final SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
+    }
+
+    @Autowired
+    public void setRoomDAO(@NonNull RoomDAO roomDAO) {
+        this.roomDAO = roomDAO;
     }
 
     @Override
@@ -70,14 +78,22 @@ public class SensorDAO implements DAO<Sensor, Integer> {
         }
     }
 
-    public List<Sensor> getSensorsList(Integer room_id) {
-        RoomDAO roomDAO = new RoomDAO(HibernateUtils.getSessionFactory());
-        Room room = roomDAO.read(room_id);
+    public List<Sensor> getSensorsList(Integer roomId) {
+        Room room = roomDAO.read(roomId);
         try (final Session session = sessionFactory.openSession()) {
             Query<Sensor> query = session.createQuery(
                     "from org.sas.model.Sensor s where s.roomId = :roomId", Sensor.class);
             query.setParameter("roomId", room);
             return query.list();
+        }
+    }
+
+    public String getSensorOwnerLogin(int sensorId) {
+        try (final Session session = sessionFactory.openSession()) {
+            Query<Sensor> query = session.createQuery(
+                    "from org.sas.model.Sensor s where s.id = :sensorId", Sensor.class);
+            query.setParameter("sensorId", sensorId);
+            return query.list().get(0).getUser().getLogin();
         }
     }
 }

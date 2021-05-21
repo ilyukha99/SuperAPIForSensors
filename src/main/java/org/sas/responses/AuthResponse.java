@@ -1,6 +1,6 @@
-package org.sas.security;
+package org.sas.responses;
 
-public class AuthResponse {
+public class AuthResponse implements Response {
     private String token;
 
     public AuthResponse(String token) {

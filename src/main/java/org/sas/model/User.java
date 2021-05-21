@@ -9,20 +9,23 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "login")
+    @Column(name = "login", unique = true)
     private String login;
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
-    @Column(name = "token")
+    @Column(name = "token", nullable = false)
     private String token;
+    @Column(name = "sensor_token")
+    private String sensorToken;
     @Column(name = "utc_timezone")
     private int timeZone;
 
+    private static final String UNDEFINED = "undefined";
     public User(String login, String password, int timeZone) {
         this.login = login;
         this.password = password;
         this.timeZone = timeZone;
-        this.token = "undefined";
+        token = sensorToken = UNDEFINED;
     }
 
     public User() {}
@@ -47,13 +50,12 @@ public class User {
         return timeZone;
     }
 
-    @Override
-    public String toString() {
-        return "User{id=" + id +
-                ", login='" + login + '\'' +
-                ", password='" + password + '\'' +
-                ", token='" + token + '\'' +
-                ", timeZone=" + timeZone + '}';
+    public String getSensorToken() {
+        return sensorToken;
+    }
+
+    public void setSensorToken(String sensorToken) {
+        this.sensorToken = sensorToken;
     }
 
     public void setTimeZone(int timezone) {
@@ -88,5 +90,15 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id, login, password, token, timeZone);
+    }
+
+    @Override
+    public String toString() {
+        return "User{id=" + id +
+                ", login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                ", token='" + token + '\'' +
+                ", sensorToken='" + sensorToken + '\'' +
+                ", timeZone=" + timeZone + '}';
     }
 }

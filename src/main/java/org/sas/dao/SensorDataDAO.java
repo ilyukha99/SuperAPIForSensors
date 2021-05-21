@@ -5,15 +5,19 @@ import org.sas.model.SensorData;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.util.List;
 
+@Component
 public class SensorDataDAO  implements DAO<SensorData, Integer>{
     private final SessionFactory sessionFactory;
 
+    @Autowired
     public SensorDataDAO(@NonNull final SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }

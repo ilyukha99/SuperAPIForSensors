@@ -11,6 +11,6 @@
         <property name="name" column="name"/>
         <property name="color" column="color"/>
         <many-to-one name="houseId" column="house_id"
-                     class="org.sas.model.House" />
+                     class="org.sas.model.House"/>
     </class>
 </hibernate-mapping>

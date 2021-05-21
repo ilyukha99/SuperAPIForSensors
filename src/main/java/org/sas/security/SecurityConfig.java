@@ -1,8 +1,10 @@
 package org.sas.security;
 
+import org.sas.security.jwt.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -15,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private PasswordEncoder passwordEncoder;
+    private JwtFilter jwtFilter;
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -23,9 +26,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         }
         return passwordEncoder;
     }
-    
+
     @Autowired
-    private JwtFilter jwtFilter;
+    public void setJwtFilter(@NonNull JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
+    }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -35,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers( "/sensors/**", "/register", "/auth", "/houses/**").permitAll()
+                .antMatchers( "/api/data", "/sensors/**", "/register", "/auth", "/houses/**").permitAll()
                 //.antMatchers("/register", "/auth").permitAll()
                 //.antMatchers("/admin/*").hasRole("ADMIN")
                 .anyRequest().authenticated()

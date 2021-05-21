@@ -8,16 +8,22 @@ import org.sas.model.House;
 import org.sas.model.Room;
 import org.sas.model.Sensor;
 import org.sas.utils.HibernateUtils;
-import org.sas.utils.HttpResponse;
 import org.sas.views.SensorView;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.lang.NonNull;
+
 
 import java.util.ArrayList;
 
 @RestController
 public class SensorsController {
+    private final HouseDAO houseDAO;
+
+    public SensorsController(@NonNull HouseDAO houseDAO) {
+        this.houseDAO = houseDAO;
+    }
 
     @GetMapping("/houses/{houseId}/rooms/{roomId}/sensors")
     public ResponseEntity<HttpResponse> getSensors(@PathVariable int houseId, @PathVariable int roomId) {

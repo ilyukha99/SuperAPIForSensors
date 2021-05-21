@@ -1,4 +1,4 @@
-package org.sas.security;
+package org.sas.security.auth_register;
 
 import javax.validation.constraints.NotEmpty;
 
