@@ -2,6 +2,7 @@ package org.sas.model;
 
 import java.util.Objects;
 
+
 public class House {
     private int id;
     private String name;
@@ -41,10 +42,9 @@ public class House {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof House)) return false;
         House house = (House) o;
-        return id == house.id && userId == house.userId && Objects.equals(name, house.name)
-                && Objects.equals(color, house.color);
+        return id == house.id && name.equals(house.name) && color.equals(house.color) && Objects.equals(userId, house.userId);
     }
 
     @Override
