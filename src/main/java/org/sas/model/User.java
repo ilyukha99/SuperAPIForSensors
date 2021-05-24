@@ -83,13 +83,12 @@ public class User {
         if (this == o) return true;
         if (!(o instanceof User)) return false;
         User user = (User) o;
-        return id == user.id && timeZone == user.timeZone && Objects.equals(login, user.login)
-                && Objects.equals(password, user.password) && Objects.equals(token, user.token);
+        return id == user.id && timeZone == user.timeZone && login.equals(user.login) && password.equals(user.password) && Objects.equals(token, user.token) && Objects.equals(sensorToken, user.sensorToken);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, login, password, token, timeZone);
+        return Objects.hash(id, login, password, token, sensorToken, timeZone);
     }
 
     @Override

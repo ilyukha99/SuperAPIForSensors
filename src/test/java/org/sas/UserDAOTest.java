@@ -21,6 +21,7 @@ public class UserDAOTest {
         testUser.setSensorToken("fdsgdfshf");
         testUser.setPassword("12345");
         testUser.setTimeZone(18);
+        testUser.setSensorToken("dfaf");
         testUser.setLogin("test");
     }
 

@@ -2,6 +2,7 @@ package org.sas.model;
 
 import java.util.Objects;
 
+
 public class Room {
     private int id;
     private String name;
@@ -46,7 +47,7 @@ public class Room {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Room)) return false;
         Room room = (Room) o;
         return id == room.id && name.equals(room.name) && color.equals(room.color) &&
                 houseId.getId() == room.houseId.getId();
