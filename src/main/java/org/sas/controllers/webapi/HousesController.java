@@ -4,6 +4,7 @@ import org.sas.dao.HouseDAO;
 import org.sas.dao.UserDAO;
 import org.sas.model.House;
 import org.sas.model.User;
+import org.sas.views.HouseView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -85,12 +86,9 @@ public class HousesController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // EXAMPLE: http://localhost:8081/houses?name=temp_02&color=orange
     @PostMapping("/houses")
     public ResponseEntity<HashMap<String, Object>> createHouse (@RequestHeader("Authorization") String userToken,
-            @RequestParam(value = "name", required=false) String house_name,
-            @RequestParam(value = "color", required=false) String house_color
-    ) {
+                                                                @RequestBody HouseView houseView) {
         Integer user_id = getUserIdFromCookie(userToken);
 
         HashMap<String, Object> response = new HashMap<>();
@@ -103,8 +101,8 @@ public class HousesController {
         User user = userDAO.read(user_id);
 
         House new_house = new House();
-        new_house.setName(house_name);
-        new_house.setColor(house_color);
+        new_house.setName(houseView.getHouseName());
+        new_house.setColor(houseView.getHouseColor());
         new_house.setUserId(user);
 
         houseDAO.create(new_house);
@@ -146,10 +144,8 @@ public class HousesController {
 
     @PutMapping("/houses/{house_id}")
     public ResponseEntity<HashMap<String, Object>> editHouse(@RequestHeader("Authorization") String userToken,
-            @PathVariable Integer house_id,
-            @RequestParam(value = "color", required = false)  String color,
-            @RequestParam(value = "name", required = false)  String name
-    ) {
+                                                             @PathVariable Integer house_id,
+                                                             @RequestBody HouseView houseView) {
         Integer user_id = getUserIdFromCookie(userToken);
 
         HashMap<String, Object> response = new HashMap<>();
@@ -168,11 +164,11 @@ public class HousesController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
-        if (name != null) {
-            edit_house.setName(name);
+        if (houseView.getHouseName() != null) {
+            edit_house.setName(houseView.getHouseName());
         }
-        if (color != null) {
-            edit_house.setColor(color);
+        if (houseView.getHouseColor() != null) {
+            edit_house.setColor(houseView.getHouseColor());
         }
 
         houseDAO.update(edit_house);

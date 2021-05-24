@@ -3,6 +3,7 @@ package org.sas.dao;
 import org.hibernate.Hibernate;
 import org.hibernate.query.Query;
 import org.sas.model.Room;
+import org.sas.model.SensorData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.hibernate.Session;

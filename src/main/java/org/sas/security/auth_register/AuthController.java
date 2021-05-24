@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Controller
@@ -40,26 +41,26 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<HttpResponse> registerUser(@RequestBody @Valid RegistrationRequest registrationRequest) {
+    public ResponseEntity<Map<String, Object>> registerUser(@RequestBody @Valid RegistrationRequest registrationRequest) {
         String login = registrationRequest.getLogin();
         if (login == null) {
-            return new ResponseEntity<>(new HttpResponse(1, "login can't be null"),
+            return new ResponseEntity<>(new HttpResponse(1, "login can't be null").getResponse(),
                     HttpStatus.BAD_REQUEST);
         }
 
         if (registrationRequest.getPassword() == null) {
-            return new ResponseEntity<>(new HttpResponse(2, "password can't be null"),
+            return new ResponseEntity<>(new HttpResponse(2, "password can't be null").getResponse(),
                     HttpStatus.BAD_REQUEST);
         }
 
         if (userDAO.loginExists(login)) {
-            return new ResponseEntity<>(new HttpResponse(3, "login already exists"),
+            return new ResponseEntity<>(new HttpResponse(3, "login already exists").getResponse(),
                     HttpStatus.BAD_REQUEST);
         }
 
         User user = new User(login, registrationRequest.getPassword(), registrationRequest.getTimeZone());
         userService.saveNewUser(user);
-        return new ResponseEntity<>(new HttpResponse(0, ""), HttpStatus.OK);
+        return new ResponseEntity<>(new HttpResponse(0, "").getResponse(), HttpStatus.OK);
     }
 
     @PostMapping("/auth")

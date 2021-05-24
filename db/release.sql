@@ -11,14 +11,14 @@ create table if not exists Houses (
     id serial primary key,
     name text not null,
     color text not null check(color in ('orange', 'blue', 'red', 'yellow', 'green')),
-    user_id integer references Users(id)
+    user_id integer references Users(id) on delete cascade
 );
 
 create table if not exists Rooms (
     id serial primary key,
     name text not null,
     color text not null check(color in ('orange', 'blue', 'red', 'yellow', 'green')),
-    house_id integer not null references Houses(id)
+    house_id integer not null references Houses(id) on delete cascade
 );
 
 create table if not exists SensorTypes (
@@ -30,14 +30,14 @@ create table if not exists SensorTypes (
 create table if not exists Sensors (
     id serial primary key,
     name text not null,
-    type_id integer not null references SensorTypes(id),
-    room_id integer references Rooms(id),
-    user_id integer not null references Users(id)
+    type_id integer not null references SensorTypes(id) on delete restrict ,
+    room_id integer references Rooms(id) on delete cascade,
+    user_id integer not null references Users(id) on delete cascade
 );
 
 create table if not exists SensorData (
     id serial primary key,
-    sensor_id integer references Sensors(id),
+    sensor_id integer references Sensors(id) on delete cascade,
     value real not null,
     time timestamp not null
 );
@@ -59,10 +59,10 @@ insert into SensorTypes (name, description) values('pressure', 'mm of mercury');
 insert into Sensors (name, type_id, room_id, user_id) values('is1', 1, 2, 2);
 insert into Sensors (name, type_id, room_id, user_id) values('hs1', 2, 2, 2);
 insert into Sensors (name, type_id, room_id, user_id) values('hs2', 2, 2, 2);
-insert into Sensors (name, type_id, room_id, user_id) values('ts1', 3, 3, 2);
-insert into Sensors (name, type_id, room_id, user_id) values('ts2', 3, 3, 2);
-insert into Sensors (name, type_id, room_id, user_id) values('ps1', 4, 3, 2);
-insert into Sensors (name, type_id, room_id, user_id) values('ps2', 4, 3, 2);
+insert into Sensors (name, type_id, room_id, user_id) values('ts1', 3, 1, 2);
+insert into Sensors (name, type_id, room_id, user_id) values('ts2', 3, 1, 2);
+insert into Sensors (name, type_id, room_id, user_id) values('ps1', 4, 1, 2);
+insert into Sensors (name, type_id, room_id, user_id) values('ps2', 4, 1, 2);
 
 insert into SensorData (sensor_id, value, time) values(7, 769, '1999-01-08 04:05:01');
 insert into SensorData (sensor_id, value, time) values(2, 19.5, '1999-01-08 04:05:06');
@@ -83,4 +83,4 @@ drop table if exists Sensors;
 drop table if exists SensorTypes;
 drop table if exists Rooms;
 drop table if exists Houses;
-drop table if exists Users;
+-- drop table if exists Users;

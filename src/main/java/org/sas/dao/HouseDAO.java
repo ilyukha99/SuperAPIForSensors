@@ -4,8 +4,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.sas.model.House;
-import org.sas.model.User;
+import org.sas.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -68,7 +67,7 @@ public class HouseDAO implements DAO<House, Integer> {
         }
     }
 
-public List<House> getHousesList(@NonNull int userId) {
+    public List<House> getHousesList(@NonNull int userId) {
         User user = userDAO.read(userId);
         try (final Session session = sessionFactory.openSession()) {
             Query<House> query = session.createQuery(

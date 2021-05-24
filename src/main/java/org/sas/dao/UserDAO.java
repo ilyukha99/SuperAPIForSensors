@@ -102,7 +102,12 @@ public class UserDAO implements DAO<User, Integer> {
             Query<User> query = session.createQuery("from org.sas.model.User user" +
                     " where user.login = :login", User.class);
             query.setParameter("login", login);
-            return query.list().get(0);
+            ArrayList<User> users = (ArrayList<User>) query.list();
+            if (users.size() == 1) {
+                return users.get(0);
+            } else {
+                return null;
+            }
         }
     }
 }

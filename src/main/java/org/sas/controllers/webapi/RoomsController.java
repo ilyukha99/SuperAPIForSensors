@@ -6,6 +6,7 @@ import org.sas.dao.SensorDAO;
 import org.sas.model.House;
 import org.sas.model.Room;
 import org.sas.model.Sensor;
+import org.sas.views.RoomView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -130,13 +131,9 @@ public class RoomsController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // EXAMPLE: http://localhost:8081/houses/1/rooms?name=room_01&color=orange
     @PostMapping("/houses/{house_id}/rooms")
-    public ResponseEntity<HashMap<String, Object>> createRoom (
-            @PathVariable Integer house_id,
-            @RequestParam(value = "name", required=false) String room_name,
-            @RequestParam(value = "color", required=false) String room_color
-    ) {
+    public ResponseEntity<HashMap<String, Object>> createRoom (@PathVariable Integer house_id,
+                                                               @RequestBody RoomView roomView) {
         Integer user_id = getUserIdFromCookie();
 
         HashMap<String, Object> response = new HashMap<>();
@@ -157,8 +154,8 @@ public class RoomsController {
         }
 
         Room new_room = new Room();
-        new_room.setName(room_name);
-        new_room.setColor(room_color);
+        new_room.setName(roomView.getRoomName());
+        new_room.setColor(roomView.getRoomColor());
         new_room.setHouseId(house);
 
         roomDAO.create(new_room);
@@ -215,12 +212,9 @@ public class RoomsController {
     }
 
     @PutMapping("/houses/{house_id}/rooms/{room_id}")
-    public ResponseEntity<HashMap<String, Object>> editRoom (
-            @PathVariable Integer house_id,
-            @PathVariable Integer room_id,
-            @RequestParam(value = "color", required = false)  String color,
-            @RequestParam(value = "name", required = false)  String name
-    ) {
+    public ResponseEntity<HashMap<String, Object>> editRoom (@PathVariable Integer house_id,
+                                                             @PathVariable Integer room_id,
+                                                             @RequestBody RoomView roomView) {
         Integer user_id = getUserIdFromCookie();
 
         HashMap<String, Object> response = new HashMap<>();
@@ -255,11 +249,11 @@ public class RoomsController {
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
         }
 
-        if (name != null) {
-            edit_room.setName(name);
+        if (roomView.getRoomName() != null) {
+            edit_room.setName(roomView.getRoomName());
         }
-        if (color != null) {
-            edit_room.setColor(color);
+        if (roomView.getRoomColor() != null) {
+            edit_room.setColor(roomView.getRoomColor());
         }
 
         roomDAO.update(edit_room);

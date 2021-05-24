@@ -10,7 +10,7 @@
         </id>
         <many-to-one name="sensor" column="sensor_id"
                      class="org.sas.model.Sensor"
-                     cascade="save-update"/>
+                     cascade="delete"/>
         <property name="value" column="value"/>
         <property name="time" column="time"/>
     </class>
