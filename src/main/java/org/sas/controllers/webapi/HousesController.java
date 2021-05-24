@@ -26,12 +26,12 @@ public class HousesController {
     }
 
     // TODO: здесь получаем user_id из куки
-    private Integer getUserIdFromCookie() { return 1; }
+    private Integer getUserIdFromCookie(String userToken) { return userDAO.getUserIdByToken(userToken); }
 
     @GetMapping("/houses")
-    public ResponseEntity<HashMap<String, Object>> getUserHouses()
+    public ResponseEntity<HashMap<String, Object>> getUserHouses(@RequestHeader("Authorization") String userToken)
     {
-        Integer user_id = getUserIdFromCookie();
+        Integer user_id = getUserIdFromCookie(userToken);
 
         HashMap<String, Object> response = new HashMap<>();
 
@@ -55,10 +55,10 @@ public class HousesController {
     }
 
     @GetMapping("/houses/{house_id}")
-    public ResponseEntity<HashMap<String, Object>> getUserHouseById(
+    public ResponseEntity<HashMap<String, Object>> getUserHouseById(@RequestHeader("Authorization") String userToken,
             @PathVariable Integer house_id
     ) {
-        Integer user_id = getUserIdFromCookie();
+        Integer user_id = getUserIdFromCookie(userToken);
 
         HashMap<String, Object> response = new HashMap<>();
 
@@ -87,11 +87,11 @@ public class HousesController {
 
     // EXAMPLE: http://localhost:8081/houses?name=temp_02&color=orange
     @PostMapping("/houses")
-    public ResponseEntity<HashMap<String, Object>> createHouse (
+    public ResponseEntity<HashMap<String, Object>> createHouse (@RequestHeader("Authorization") String userToken,
             @RequestParam(value = "name", required=false) String house_name,
             @RequestParam(value = "color", required=false) String house_color
     ) {
-        Integer user_id = getUserIdFromCookie();
+        Integer user_id = getUserIdFromCookie(userToken);
 
         HashMap<String, Object> response = new HashMap<>();
 
@@ -115,10 +115,10 @@ public class HousesController {
     }
 
     @DeleteMapping("/houses/{house_id}")
-    public ResponseEntity<HashMap<String, Object>> deleteHouse(
+    public ResponseEntity<HashMap<String, Object>> deleteHouse(@RequestHeader("Authorization") String userToken,
             @PathVariable Integer house_id
     ) {
-        Integer user_id = getUserIdFromCookie();
+        Integer user_id = getUserIdFromCookie(userToken);
 
         HashMap<String, Object> response = new HashMap<>();
 
@@ -145,12 +145,12 @@ public class HousesController {
 
 
     @PutMapping("/houses/{house_id}")
-    public ResponseEntity<HashMap<String, Object>> editHouse(
+    public ResponseEntity<HashMap<String, Object>> editHouse(@RequestHeader("Authorization") String userToken,
             @PathVariable Integer house_id,
             @RequestParam(value = "color", required = false)  String color,
             @RequestParam(value = "name", required = false)  String name
     ) {
-        Integer user_id = getUserIdFromCookie();
+        Integer user_id = getUserIdFromCookie(userToken);
 
         HashMap<String, Object> response = new HashMap<>();
 

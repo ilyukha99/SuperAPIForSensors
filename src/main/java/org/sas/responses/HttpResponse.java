@@ -1,6 +1,7 @@
 package org.sas.responses;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class HttpResponse implements Response {
     private final LinkedHashMap<String, Object> response = new LinkedHashMap<>();
@@ -20,12 +21,21 @@ public class HttpResponse implements Response {
         response.put(CODE, code);
     }
 
-    public String getMessage() {
+    public String getError() {
         return (String)response.get(ERROR);
     }
 
-    public void setMessage(String errorMessage) {
+    public void setError(String errorMessage) {
         response.put(ERROR, errorMessage);
+    }
+
+    public Map<String, Object> getResponse() {
+        return response;
+    }
+
+    public Map<String, Object> addResponseParameter(String name, Object value) {
+        response.put(name, value);
+        return response;
     }
 
     @Override

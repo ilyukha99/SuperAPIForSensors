@@ -9,6 +9,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.hibernate.query.Query;
 
+import java.util.ArrayList;
+
 @Component
 public class UserDAO implements DAO<User, Integer> {
     private final SessionFactory sessionFactory;
@@ -60,6 +62,20 @@ public class UserDAO implements DAO<User, Integer> {
                     " where user.token = :token", User.class);
             query.setParameter("token", userToken);
             return !query.list().isEmpty();
+        }
+    }
+
+    public Integer getUserIdByToken(@NonNull String userToken) {
+        try(Session session = sessionFactory.openSession()) {
+            Query<User> query = session.createQuery("from org.sas.model.User user" +
+                    " where user.token = :token", User.class);
+            query.setParameter("token", userToken.substring(7)); //Because "Bearer <token>"
+            ArrayList<User> users = (ArrayList<User>) query.list();
+            if (users.size() == 1) {
+                return users.get(0).getId();
+            } else {
+                return null;
+            }
         }
     }
 

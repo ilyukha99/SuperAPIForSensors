@@ -18,6 +18,7 @@ public class UserDAOTest {
     public void doBefore() {
         userDAO = new UserDAO(sessionFactory);
         testUser.setToken("qwerty");
+        testUser.setSensorToken("fdsgdfshf");
         testUser.setPassword("12345");
         testUser.setTimeZone(18);
         testUser.setLogin("test");
