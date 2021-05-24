@@ -49,12 +49,13 @@ public class Room {
         if (this == o) return true;
         if (!(o instanceof Room)) return false;
         Room room = (Room) o;
-        return id == room.id && name.equals(room.name) && color.equals(room.color) && Objects.equals(houseId, room.houseId);
+        return id == room.id && name.equals(room.name) && color.equals(room.color) &&
+                houseId.getId() == room.houseId.getId();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, houseId);
+        return Objects.hash(id, name, color, houseId.getId());
     }
 
     @Override
@@ -63,7 +64,7 @@ public class Room {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
-                ", houseId=" + houseId +
+                ", houseId=" + houseId.getId() +
                 '}';
     }
 }

@@ -44,12 +44,13 @@ public class House {
         if (this == o) return true;
         if (!(o instanceof House)) return false;
         House house = (House) o;
-        return id == house.id && name.equals(house.name) && color.equals(house.color) && Objects.equals(userId, house.userId);
+        return id == house.id && name.equals(house.name) && color.equals(house.color) &&
+                userId.getId() == house.userId.getId();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, userId);
+        return Objects.hash(id, name, color, userId.getId());
     }
 
     @Override
@@ -57,6 +58,6 @@ public class House {
         return "House{id=" + id +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
-                ", userId=" + userId + '}';
+                ", userId=" + userId.getId() + '}';
     }
 }

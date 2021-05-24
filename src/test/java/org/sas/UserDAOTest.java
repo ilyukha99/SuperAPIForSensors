@@ -20,6 +20,7 @@ public class UserDAOTest {
         testUser.setToken("qwerty");
         testUser.setPassword("12345");
         testUser.setTimeZone(18);
+        testUser.setSensorToken("dfaf");
         testUser.setLogin("test");
     }
 
