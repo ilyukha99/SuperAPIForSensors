@@ -10,7 +10,7 @@
 
         <mapping resource="models/User.hbm.xml"/>
         <mapping resource="models/SensorType.hbm.xml"/>
-<!--        <mapping resource="models/SensorData.hbm.xml"/>-->
+        <mapping resource="models/SensorData.hbm.xml"/>
         <mapping resource="models/Sensor.hbm.xml"/>
         <mapping resource="models/House.hbm.xml"/>
         <mapping resource="models/Room.hbm.xml"/>
