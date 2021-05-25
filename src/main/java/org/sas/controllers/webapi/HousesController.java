@@ -1,8 +1,10 @@
 package org.sas.controllers.webapi;
 
 import org.sas.dao.HouseDAO;
+import org.sas.dao.RoomDAO;
 import org.sas.dao.UserDAO;
 import org.sas.model.House;
+import org.sas.model.Room;
 import org.sas.model.User;
 import org.sas.views.HouseView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +21,13 @@ import java.util.HashMap;
 public class HousesController {
     private final HouseDAO houseDAO;
     private final UserDAO userDAO;
+    private final RoomDAO roomDAO;
 
     @Autowired
-    public HousesController(@NonNull HouseDAO houseDAO, @NonNull UserDAO userDAO) {
+    public HousesController(@NonNull HouseDAO houseDAO, @NonNull UserDAO userDAO, @NonNull RoomDAO roomDAO) {
         this.houseDAO = houseDAO;
         this.userDAO = userDAO;
+        this.roomDAO = roomDAO;
     }
 
     // TODO: здесь получаем user_id из куки
@@ -82,6 +86,13 @@ public class HousesController {
 
         response.put("house_name", house.getName());
         response.put("house_color", house.getColor());
+
+        ArrayList<Room> roomList = (ArrayList<Room>) roomDAO.getRoomsList(house.getId());
+        ArrayList<Integer> roomIdList = new ArrayList<>();
+        for (Room room: roomList) {
+            roomIdList.add(room.getId());
+        }
+        response.put("rooms", roomIdList);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -3,9 +3,11 @@ package org.sas.controllers.webapi;
 import org.sas.dao.HouseDAO;
 import org.sas.dao.RoomDAO;
 import org.sas.dao.SensorDAO;
+import org.sas.dao.UserDAO;
 import org.sas.model.House;
 import org.sas.model.Room;
 import org.sas.model.Sensor;
+import org.sas.model.User;
 import org.sas.views.RoomView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,24 +24,26 @@ public class RoomsController {
     private final HouseDAO houseDAO;
     private final RoomDAO roomDAO;
     private final SensorDAO sensorDAO;
+    private final UserDAO userDAO;
 
     @Autowired
     public RoomsController(@NonNull HouseDAO houseDAO, @NonNull RoomDAO roomDAO,
-                           @NonNull SensorDAO sensorDAO) {
+                           @NonNull SensorDAO sensorDAO, @NonNull UserDAO userDAO) {
         this.houseDAO = houseDAO;
         this.roomDAO = roomDAO;
         this.sensorDAO = sensorDAO;
+        this.userDAO = userDAO;
     }
 
     // TODO: здесь получаем user_id из куки
-    private Integer getUserIdFromCookie() { return 1; }
+    private Integer getUserIdFromCookie(String userToken) { return userDAO.getUserIdByToken(userToken); }
 
     @GetMapping("/houses/{house_id}/rooms")
-    public ResponseEntity<HashMap<String, Object>> getHouseRooms (
+    public ResponseEntity<HashMap<String, Object>> getHouseRooms (@RequestHeader("Authorization") String userToken,
             @PathVariable Integer house_id
     )
     {
-        Integer user_id = getUserIdFromCookie();
+        Integer user_id = getUserIdFromCookie(userToken);
 
         HashMap<String, Object> response = new HashMap<>();
 
@@ -74,11 +78,11 @@ public class RoomsController {
     }
 
     @GetMapping("/houses/{house_id}/rooms/{room_id}")
-    public ResponseEntity<HashMap<String, Object>> getRoomByHouseId (
+    public ResponseEntity<HashMap<String, Object>> getRoomByHouseId (@RequestHeader("Authorization") String userToken,
             @PathVariable Integer house_id,
             @PathVariable Integer room_id
     ) {
-        Integer user_id = getUserIdFromCookie();
+        Integer user_id = getUserIdFromCookie(userToken);
 
         HashMap<String, Object> response = new HashMap<>();
 
@@ -133,8 +137,9 @@ public class RoomsController {
 
     @PostMapping("/houses/{house_id}/rooms")
     public ResponseEntity<HashMap<String, Object>> createRoom (@PathVariable Integer house_id,
-                                                               @RequestBody RoomView roomView) {
-        Integer user_id = getUserIdFromCookie();
+                                                               @RequestBody RoomView roomView,
+                                                               @RequestHeader("Authorization") String userToken) {
+        Integer user_id = getUserIdFromCookie(userToken);
 
         HashMap<String, Object> response = new HashMap<>();
 
@@ -166,11 +171,11 @@ public class RoomsController {
     }
 
     @DeleteMapping("/houses/{house_id}/rooms/{room_id}")
-    public ResponseEntity<HashMap<String, Object>> deleteRoom (
+    public ResponseEntity<HashMap<String, Object>> deleteRoom (@RequestHeader("Authorization") String userToken,
             @PathVariable Integer house_id,
             @PathVariable Integer room_id
     ) {
-        Integer user_id = getUserIdFromCookie();
+        Integer user_id = getUserIdFromCookie(userToken);
 
         HashMap<String, Object> response = new HashMap<>();
 
@@ -214,8 +219,9 @@ public class RoomsController {
     @PutMapping("/houses/{house_id}/rooms/{room_id}")
     public ResponseEntity<HashMap<String, Object>> editRoom (@PathVariable Integer house_id,
                                                              @PathVariable Integer room_id,
-                                                             @RequestBody RoomView roomView) {
-        Integer user_id = getUserIdFromCookie();
+                                                             @RequestBody RoomView roomView,
+                                                             @RequestHeader("Authorization") String userToken) {
+        Integer user_id = getUserIdFromCookie(userToken);
 
         HashMap<String, Object> response = new HashMap<>();
 
