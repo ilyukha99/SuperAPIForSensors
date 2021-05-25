@@ -1,10 +1,11 @@
 package org.sas.responses;
 
-public class AuthResponse implements Response {
+public class AuthResponse extends HttpResponse {
     private String token;
 
-    public AuthResponse(String token) {
-        this.token = token;
+    public AuthResponse(int code, String error, String token) {
+        super(code, error);
+        super.addResponseParameter("token", token);
     }
 
     public String getToken() {

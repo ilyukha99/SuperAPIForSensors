@@ -1,23 +1,13 @@
 package org.sas.model;
 
-import javax.persistence.*;
 import java.util.Objects;
 
-@Entity
-@Table(name = "users")
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "login", unique = true)
     private String login;
-    @Column(name = "password", nullable = false)
     private String password;
-    @Column(name = "token", nullable = false)
     private String token;
-    @Column(name = "sensor_token")
     private String sensorToken;
-    @Column(name = "utc_timezone")
     private int timeZone;
 
     private static final String UNDEFINED = "undefined";
@@ -83,13 +73,12 @@ public class User {
         if (this == o) return true;
         if (!(o instanceof User)) return false;
         User user = (User) o;
-        return id == user.id && timeZone == user.timeZone && Objects.equals(login, user.login)
-                && Objects.equals(password, user.password) && Objects.equals(token, user.token);
+        return id == user.id && timeZone == user.timeZone && login.equals(user.login) && password.equals(user.password) && Objects.equals(token, user.token) && Objects.equals(sensorToken, user.sensorToken);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, login, password, token, timeZone);
+        return Objects.hash(id, login, password, token, sensorToken, timeZone);
     }
 
     @Override

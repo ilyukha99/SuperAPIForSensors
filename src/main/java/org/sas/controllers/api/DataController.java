@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @CustomExceptionHandler
 public class DataController {
@@ -36,38 +38,38 @@ public class DataController {
     }
 
     @PostMapping("/api/data")
-    public ResponseEntity<HttpResponse> addNewData(@RequestBody SensorDataView dataView) {
+    public ResponseEntity<Map<String, Object>> addNewData(@RequestBody SensorDataView dataView) {
         String sensorToken = dataView.getSensorToken();
         if (dataView.getRecordTime() == null) {
             return new ResponseEntity<>(new HttpResponse(1,
-                    "incorrect timestamp given, json pattern: 'yyyy-mm-ddThh:mm:ssZ"),
+                    "incorrect timestamp given, json pattern: 'yyyy-mm-ddThh:mm:ssZ").getResponse(),
                     HttpStatus.BAD_REQUEST);
         }
 
         if (!userDAO.sensorTokenExists(sensorToken)) {
-            return new ResponseEntity<>(new HttpResponse(2, "incorrect sensor token given"),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new HttpResponse(2, "incorrect sensor token given")
+                    .getResponse(), HttpStatus.BAD_REQUEST);
         }
 
         if (!sensorDAO.getSensorOwnerLogin(dataView.getSensorId())
                 .equals(jwtProvider.getLoginFromToken(sensorToken))) {
-            return new ResponseEntity<>(new HttpResponse(4, "incorrect sensor owner"),
+            return new ResponseEntity<>(new HttpResponse(4, "incorrect sensor owner").getResponse(),
                     HttpStatus.BAD_REQUEST);
         }
 
         Sensor sensor = sensorDAO.read(dataView.getSensorId());
         if (sensor == null) {
-            return new ResponseEntity<>(new HttpResponse(3, "incorrect sensor id given"),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new HttpResponse(3, "incorrect sensor id given")
+                    .getResponse(), HttpStatus.BAD_REQUEST);
         }
         SensorData sensorData = new SensorData(sensor, dataView.getValue(), dataView.getRecordTime());
 
         sensorDataDAO.create(sensorData);
-        return new ResponseEntity<>(new HttpResponse(0, ""), HttpStatus.OK);
+        return new ResponseEntity<>(new HttpResponse(0, "").getResponse(), HttpStatus.OK);
     }
 
     @GetMapping("/api/data")
-    public ResponseEntity<HttpResponse> greet() {
-        return new ResponseEntity<>(new HttpResponse(0, "we greet you"), HttpStatus.OK);
+    public ResponseEntity<Map<String, Object>> greet() {
+        return new ResponseEntity<>(new HttpResponse(0, "we greet you").getResponse(), HttpStatus.OK);
     }
 }
