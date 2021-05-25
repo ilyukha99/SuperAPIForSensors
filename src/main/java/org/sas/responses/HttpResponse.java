@@ -3,7 +3,7 @@ package org.sas.responses;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class HttpResponse implements Response {
+public class HttpResponse {
     private final LinkedHashMap<String, Object> response = new LinkedHashMap<>();
     private static final String ERROR = "error";
     private static final String CODE = "code";

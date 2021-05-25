@@ -3,7 +3,6 @@ package org.sas.security.auth_register;
 import org.sas.dao.UserDAO;
 import org.sas.model.User;
 import org.sas.responses.AuthResponse;
-import org.sas.responses.Response;
 import org.sas.security.jwt.JwtProvider;
 import org.sas.services.UserService;
 import org.sas.responses.HttpResponse;
@@ -64,48 +63,49 @@ public class AuthController {
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<AuthResponse> authorizeUser(@RequestBody @Valid AuthRequest authRequest) {
+    public ResponseEntity<Map<String, Object>> authorizeUser(@RequestBody @Valid AuthRequest authRequest) {
         try {
             userService.findByLoginAndPassword(authRequest.getLogin(), authRequest.getPassword());
             String token = jwtProvider.generateToken(authRequest.getLogin(), 3);
             userService.updateUserToken(token, authRequest.getLogin());
-            return new ResponseEntity<>(new AuthResponse(token), HttpStatus.OK);
+            return new ResponseEntity<>(new AuthResponse(0, "", token).getResponse(), HttpStatus.OK);
         }
         catch (UsernameNotFoundException exception) {
             logger.warning("User with login: \"" + authRequest.getLogin() + "\" not found");
         }
-        return new ResponseEntity<>(new AuthResponse("Failed"), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new AuthResponse(1, "user with login: " +
+                "\"" + authRequest.getLogin() + "\" not found", "").getResponse(), HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping(value="/generateToken", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Response> generateSensorToken(@RequestHeader("Authorization") String bearerHeader) {
+    public ResponseEntity<Map<String, Object>> generateSensorToken(@RequestHeader("Authorization") String bearerHeader) {
         String userToken;
         if (StringUtils.hasText(bearerHeader) && bearerHeader.startsWith("Bearer ")) {
             userToken = bearerHeader.substring(7);
         }
         else {
-            return new ResponseEntity<>(new HttpResponse(1, "invalid Authorization header provided"),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new AuthResponse(1, "invalid Authorization header provided", "")
+                    .getResponse(), HttpStatus.BAD_REQUEST);
         }
 
         if (!userDAO.tokenExists(userToken)) {
-            return new ResponseEntity<>(new HttpResponse(2, "this token does not exists"),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new AuthResponse(2, "this token does not exists", "")
+                    .getResponse(), HttpStatus.BAD_REQUEST);
         }
 
         String login = jwtProvider.getLoginFromToken(userToken);
         if (login == null) {
-            return new ResponseEntity<>(new HttpResponse(3, "invalid user token provided"),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new AuthResponse(3, "invalid user token provided", "")
+                    .getResponse(), HttpStatus.BAD_REQUEST);
         }
 
         if (!userDAO.loginExists(login)) {
-            return new ResponseEntity<>(new HttpResponse(4, "no such user found"),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new AuthResponse(4, "no such user found", "")
+                    .getResponse(), HttpStatus.BAD_REQUEST);
         }
 
         String sensorToken = jwtProvider.generateToken(login, 365);
         userService.updateSensorToken(sensorToken, login);
-        return new ResponseEntity<>(new AuthResponse(sensorToken), HttpStatus.OK);
+        return new ResponseEntity<>(new AuthResponse(0, "", sensorToken).getResponse(), HttpStatus.OK);
     }
 }
