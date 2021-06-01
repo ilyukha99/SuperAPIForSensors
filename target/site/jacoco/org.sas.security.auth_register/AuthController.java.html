@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SuperApiForSensors</a> &gt; <a href="index.source.html" class="el_package">org.sas.security.auth_register</a> &gt; <span class="el_source">AuthController.java</span></div><h1>AuthController.java</h1><pre class="source lang-java linenums">package org.sas.security.auth_register;
+
+import org.sas.dao.UserDAO;
+import org.sas.model.User;
+import org.sas.responses.AuthResponse;
+import org.sas.security.jwt.JwtProvider;
+import org.sas.services.UserService;
+import org.sas.responses.HttpResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.Map;
+import java.util.logging.Logger;
+
+@Controller
+public class AuthController {
+<span class="nc" id="L25">    private final Logger logger = Logger.getLogger(AuthController.class.getName());</span>
+
+    private final UserService userService;
+    private final JwtProvider jwtProvider;
+    private UserDAO userDAO;
+
+    @Autowired
+<span class="nc" id="L32">    public AuthController(@NonNull UserService userService, @NonNull JwtProvider jwtProvider) {</span>
+<span class="nc" id="L33">        this.userService = userService;</span>
+<span class="nc" id="L34">        this.jwtProvider = jwtProvider;</span>
+<span class="nc" id="L35">    }</span>
+
+    @Autowired
+    public void setUserDAO(@NonNull UserDAO userDAO) {
+<span class="nc" id="L39">        this.userDAO = userDAO;</span>
+<span class="nc" id="L40">    }</span>
+
+    @PostMapping(&quot;/register&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; registerUser(@RequestBody @Valid RegistrationRequest registrationRequest) {
+<span class="nc" id="L44">        String login = registrationRequest.getLogin();</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (login == null) {</span>
+<span class="nc" id="L46">            return new ResponseEntity&lt;&gt;(new HttpResponse(1, &quot;login can't be null&quot;).getResponse(),</span>
+                    HttpStatus.BAD_REQUEST);
+        }
+
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (registrationRequest.getPassword() == null) {</span>
+<span class="nc" id="L51">            return new ResponseEntity&lt;&gt;(new HttpResponse(2, &quot;password can't be null&quot;).getResponse(),</span>
+                    HttpStatus.BAD_REQUEST);
+        }
+
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        if (userDAO.loginExists(login)) {</span>
+<span class="nc" id="L56">            return new ResponseEntity&lt;&gt;(new HttpResponse(3, &quot;login already exists&quot;).getResponse(),</span>
+                    HttpStatus.BAD_REQUEST);
+        }
+
+<span class="nc" id="L60">        User user = new User(login, registrationRequest.getPassword(), registrationRequest.getTimeZone());</span>
+<span class="nc" id="L61">        userService.saveNewUser(user);</span>
+<span class="nc" id="L62">        return new ResponseEntity&lt;&gt;(new HttpResponse(0, &quot;&quot;).getResponse(), HttpStatus.OK);</span>
+    }
+
+    @PostMapping(&quot;/auth&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; authorizeUser(@RequestBody @Valid AuthRequest authRequest) {
+        try {
+<span class="nc" id="L68">            userService.findByLoginAndPassword(authRequest.getLogin(), authRequest.getPassword());</span>
+<span class="nc" id="L69">            String token = jwtProvider.generateToken(authRequest.getLogin(), 3);</span>
+<span class="nc" id="L70">            userService.updateUserToken(token, authRequest.getLogin());</span>
+<span class="nc" id="L71">            return new ResponseEntity&lt;&gt;(new AuthResponse(0, &quot;&quot;, token).getResponse(), HttpStatus.OK);</span>
+        }
+<span class="nc" id="L73">        catch (UsernameNotFoundException exception) {</span>
+<span class="nc" id="L74">            logger.warning(&quot;User with login: \&quot;&quot; + authRequest.getLogin() + &quot;\&quot; not found&quot;);</span>
+        }
+<span class="nc" id="L76">        return new ResponseEntity&lt;&gt;(new AuthResponse(1, &quot;user with login: &quot; +</span>
+<span class="nc" id="L77">                &quot;\&quot;&quot; + authRequest.getLogin() + &quot;\&quot; not found&quot;, &quot;&quot;).getResponse(), HttpStatus.BAD_REQUEST);</span>
+    }
+
+    @GetMapping(value=&quot;/generateToken&quot;, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; generateSensorToken(@RequestHeader(&quot;Authorization&quot;) String bearerHeader) {
+        String userToken;
+<span class="nc bnc" id="L83" title="All 4 branches missed.">        if (StringUtils.hasText(bearerHeader) &amp;&amp; bearerHeader.startsWith(&quot;Bearer &quot;)) {</span>
+<span class="nc" id="L84">            userToken = bearerHeader.substring(7);</span>
+        }
+        else {
+<span class="nc" id="L87">            return new ResponseEntity&lt;&gt;(new AuthResponse(1, &quot;invalid Authorization header provided&quot;, &quot;&quot;)</span>
+<span class="nc" id="L88">                    .getResponse(), HttpStatus.BAD_REQUEST);</span>
+        }
+
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (!userDAO.tokenExists(userToken)) {</span>
+<span class="nc" id="L92">            return new ResponseEntity&lt;&gt;(new AuthResponse(2, &quot;this token does not exists&quot;, &quot;&quot;)</span>
+<span class="nc" id="L93">                    .getResponse(), HttpStatus.BAD_REQUEST);</span>
+        }
+
+<span class="nc" id="L96">        String login = jwtProvider.getLoginFromToken(userToken);</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        if (login == null) {</span>
+<span class="nc" id="L98">            return new ResponseEntity&lt;&gt;(new AuthResponse(3, &quot;invalid user token provided&quot;, &quot;&quot;)</span>
+<span class="nc" id="L99">                    .getResponse(), HttpStatus.BAD_REQUEST);</span>
+        }
+
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (!userDAO.loginExists(login)) {</span>
+<span class="nc" id="L103">            return new ResponseEntity&lt;&gt;(new AuthResponse(4, &quot;no such user found&quot;, &quot;&quot;)</span>
+<span class="nc" id="L104">                    .getResponse(), HttpStatus.BAD_REQUEST);</span>
+        }
+
+<span class="nc" id="L107">        String sensorToken = jwtProvider.generateToken(login, 365);</span>
+<span class="nc" id="L108">        userService.updateSensorToken(sensorToken, login);</span>
+<span class="nc" id="L109">        return new ResponseEntity&lt;&gt;(new AuthResponse(0, &quot;&quot;, sensorToken).getResponse(), HttpStatus.OK);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

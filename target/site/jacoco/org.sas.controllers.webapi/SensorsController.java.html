@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SensorsController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SuperApiForSensors</a> &gt; <a href="index.source.html" class="el_package">org.sas.controllers.webapi</a> &gt; <span class="el_source">SensorsController.java</span></div><h1>SensorsController.java</h1><pre class="source lang-java linenums">package org.sas.controllers.webapi;
+
+import org.sas.dao.*;
+import org.sas.model.*;
+import org.sas.responses.HttpResponse;
+import org.sas.views.SensorView;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.lang.NonNull;
+
+
+import java.util.ArrayList;
+import java.util.Map;
+
+@RestController
+public class SensorsController {
+    private final HouseDAO houseDAO;
+    private final RoomDAO roomDAO;
+    private final SensorDAO sensorDAO;
+    private final SensorTypeDAO sensorTypeDAO;
+    private final UserDAO userDAO;
+    private final SensorDataDAO sensorDataDAO;
+
+    public SensorsController(@NonNull HouseDAO houseDAO, @NonNull RoomDAO roomDAO, @NonNull SensorDAO sensorDAO,
+                             @NonNull SensorTypeDAO sensorTypeDAO, @NonNull UserDAO userDAO,
+<span class="nc" id="L27">                             @NonNull SensorDataDAO sensorDataDAO) {</span>
+<span class="nc" id="L28">        this.houseDAO = houseDAO;</span>
+<span class="nc" id="L29">        this.roomDAO = roomDAO;</span>
+<span class="nc" id="L30">        this.sensorDAO = sensorDAO;</span>
+<span class="nc" id="L31">        this.sensorTypeDAO = sensorTypeDAO;</span>
+<span class="nc" id="L32">        this.userDAO = userDAO;</span>
+<span class="nc" id="L33">        this.sensorDataDAO = sensorDataDAO;</span>
+<span class="nc" id="L34">    }</span>
+
+    @GetMapping(&quot;/houses/{houseId}/rooms/{roomId}/sensors&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; getSensors(@PathVariable int houseId, @PathVariable int roomId,
+                                                          @RequestHeader(&quot;Authorization&quot;) String userToken) {
+<span class="nc" id="L39">        House house = houseDAO.read(houseId);</span>
+<span class="nc" id="L40">        Room room = roomDAO.read(roomId);</span>
+
+<span class="nc bnc" id="L42" title="All 4 branches missed.">        if (house != null &amp;&amp; room != null) {</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">            if (userDAO.getUserIdByToken(userToken) == house.getUserId().getId()) {</span>
+<span class="nc" id="L44">                ArrayList&lt;Sensor&gt; sensorList = (ArrayList&lt;Sensor&gt;) sensorDAO.getSensorsByHouseAndRoom(houseId, roomId);</span>
+<span class="nc" id="L45">                ArrayList&lt;Integer&gt; sensorsIdList = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">                for (Sensor sensor : sensorList) {</span>
+<span class="nc" id="L47">                    sensorsIdList.add(sensor.getId());</span>
+<span class="nc" id="L48">                }</span>
+<span class="nc" id="L49">                return new ResponseEntity&lt;&gt;(new HttpResponse(0, &quot;&quot;)</span>
+<span class="nc" id="L50">                        .addResponseParameter(&quot;sensors&quot;, sensorsIdList), HttpStatus.OK);</span>
+            } else {
+<span class="nc" id="L52">                return new ResponseEntity&lt;&gt;(new HttpResponse(100, &quot;unauthorized user&quot;)</span>
+<span class="nc" id="L53">                        .getResponse(), HttpStatus.FORBIDDEN);</span>
+            }
+        } else {
+<span class="nc" id="L56">            return new ResponseEntity&lt;&gt;(new HttpResponse(1, &quot;Invalid house or room identifier&quot;)</span>
+<span class="nc" id="L57">                    .getResponse(),</span>
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(&quot;/houses/{houseId}/rooms/{roomId}/sensors/{sensorId}&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; getSensor(@PathVariable int houseId, @PathVariable int roomId,
+                                                         @PathVariable int sensorId,
+                                                         @RequestHeader(&quot;Authorization&quot;) String userToken) {
+<span class="nc" id="L66">        House house = houseDAO.read(houseId);</span>
+<span class="nc" id="L67">        Room room = roomDAO.read(roomId);</span>
+
+<span class="nc bnc" id="L69" title="All 4 branches missed.">        if (house != null &amp;&amp; room != null) {</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">            if (userDAO.getUserIdByToken(userToken) == house.getUserId().getId()) {</span>
+<span class="nc" id="L71">                Sensor sensor = sensorDAO.read(sensorId);</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">                if (sensor != null) {</span>
+<span class="nc" id="L73">                    return new ResponseEntity&lt;&gt;(new HttpResponse(0, &quot;&quot;)</span>
+<span class="nc" id="L74">                            .addResponseParameter(&quot;name&quot;, sensor.getName()), HttpStatus.OK);</span>
+                } else {
+<span class="nc" id="L76">                    return new ResponseEntity&lt;&gt;(new HttpResponse(2, &quot;Invalid sensor&quot;)</span>
+<span class="nc" id="L77">                            .getResponse(),</span>
+                            HttpStatus.BAD_REQUEST);
+                }
+            } else {
+<span class="nc" id="L81">                return new ResponseEntity&lt;&gt;(new HttpResponse(100, &quot;unauthorized user&quot;)</span>
+<span class="nc" id="L82">                        .getResponse(), HttpStatus.FORBIDDEN);</span>
+            }
+        } else {
+<span class="nc" id="L85">            return new ResponseEntity&lt;&gt;(new HttpResponse(1, &quot;Invalid house or room identifier&quot;)</span>
+<span class="nc" id="L86">                    .getResponse(),</span>
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping(&quot;/houses/{houseId}/rooms/{roomId}/sensors&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; createSensor(@PathVariable int houseId, @PathVariable int roomId,
+                                                            @RequestBody SensorView sensorView,
+                                                            @RequestHeader(&quot;Authorization&quot;) String userToken) {
+<span class="nc" id="L95">        House house = houseDAO.read(houseId);</span>
+<span class="nc" id="L96">        Room room = roomDAO.read(roomId);</span>
+
+<span class="nc bnc" id="L98" title="All 4 branches missed.">        if (house != null &amp;&amp; room != null) {</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">            if (userDAO.getUserIdByToken(userToken) == house.getUserId().getId()) {</span>
+<span class="nc" id="L100">                House houseOfRoom = houseDAO.read(room.getHouseId().getId());</span>
+<span class="nc" id="L101">                SensorType sensorType = sensorTypeDAO.read(sensorView.getTypeId());</span>
+<span class="nc bnc" id="L102" title="All 6 branches missed.">                if (houseOfRoom != null &amp;&amp; sensorType != null &amp;&amp; houseOfRoom.equals(house)) {</span>
+<span class="nc" id="L103">                    Sensor sensor = new Sensor();</span>
+<span class="nc" id="L104">                    sensor.setName(sensorView.getName());</span>
+<span class="nc" id="L105">                    sensor.setUser(userDAO.read(userDAO.getUserIdByToken(userToken)));</span>
+<span class="nc" id="L106">                    sensor.setType(sensorTypeDAO.read(sensorView.getTypeId()));</span>
+<span class="nc" id="L107">                    sensor.setRoomId(room);</span>
+<span class="nc" id="L108">                    sensorDAO.create(sensor);</span>
+<span class="nc" id="L109">                    return new ResponseEntity&lt;&gt;(new HttpResponse(0, &quot;&quot;).getResponse(), HttpStatus.OK);</span>
+                } else {
+<span class="nc" id="L111">                    return new ResponseEntity&lt;&gt;(</span>
+                            new HttpResponse(1, &quot;The specified room does not belong to this house or&quot; +
+                                    &quot; sensor type is invalid&quot;)
+<span class="nc" id="L114">                                    .getResponse(),</span>
+                            HttpStatus.BAD_REQUEST);
+                }
+            } else {
+<span class="nc" id="L118">                return new ResponseEntity&lt;&gt;(new HttpResponse(100, &quot;unauthorized user&quot;)</span>
+<span class="nc" id="L119">                        .getResponse(), HttpStatus.FORBIDDEN);</span>
+            }
+        } else {
+<span class="nc" id="L122">            return new ResponseEntity&lt;&gt;(new HttpResponse(1, &quot;Invalid house or room identifier&quot;)</span>
+<span class="nc" id="L123">                    .getResponse(),</span>
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping(&quot;/houses/{houseId}/rooms/{roomId}/sensors/{sensorId}&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; updateSensor(@PathVariable int houseId, @PathVariable int roomId,
+                                                            @PathVariable int sensorId,
+                                                            @RequestBody SensorView sensorView,
+                                                            @RequestHeader(&quot;Authorization&quot;) String userToken) {
+<span class="nc" id="L133">        House house = houseDAO.read(houseId);</span>
+<span class="nc" id="L134">        Room room = roomDAO.read(roomId);</span>
+
+<span class="nc bnc" id="L136" title="All 4 branches missed.">        if (house != null &amp;&amp; room != null) {</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">            if (userDAO.getUserIdByToken(userToken) == house.getUserId().getId()) {</span>
+<span class="nc" id="L138">                Sensor sensor = sensorDAO.read(sensorId);</span>
+<span class="nc" id="L139">                SensorType sensorType = sensorTypeDAO.read(sensorView.getTypeId());</span>
+<span class="nc bnc" id="L140" title="All 4 branches missed.">                if (sensor != null &amp;&amp; sensorType != null) {</span>
+<span class="nc" id="L141">                    sensor.setName(sensorView.getName());</span>
+<span class="nc" id="L142">                    sensor.setType(sensorType);</span>
+<span class="nc" id="L143">                    sensorDAO.update(sensor);</span>
+<span class="nc" id="L144">                    return new ResponseEntity&lt;&gt;(new HttpResponse(0, &quot;&quot;).getResponse(), HttpStatus.OK);</span>
+                } else {
+<span class="nc" id="L146">                    return new ResponseEntity&lt;&gt;(new HttpResponse(2, &quot;Sensor with given id doesn't exist&quot; +</span>
+                            &quot; or sensor type is invalid&quot;)
+<span class="nc" id="L148">                            .getResponse(), HttpStatus.BAD_REQUEST);</span>
+                }
+            } else {
+<span class="nc" id="L151">                return new ResponseEntity&lt;&gt;(new HttpResponse(100, &quot;unauthorized user&quot;)</span>
+<span class="nc" id="L152">                        .getResponse(), HttpStatus.FORBIDDEN);</span>
+            }
+        } else {
+<span class="nc" id="L155">            return new ResponseEntity&lt;&gt;(new HttpResponse(1, &quot;Invalid house or room identifier&quot;)</span>
+<span class="nc" id="L156">                    .getResponse(), HttpStatus.BAD_REQUEST);</span>
+        }
+    }
+
+    @DeleteMapping(&quot;/houses/{houseId}/rooms/{roomId}/sensors/{sensorId}&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; deleteSensor(@PathVariable int houseId, @PathVariable int roomId,
+                                                            @PathVariable int sensorId,
+                                                            @RequestHeader(&quot;Authorization&quot;) String userToken) {
+<span class="nc" id="L164">        House house = houseDAO.read(houseId);</span>
+<span class="nc" id="L165">        Room room = roomDAO.read(roomId);</span>
+
+<span class="nc bnc" id="L167" title="All 4 branches missed.">        if (house != null &amp;&amp; room != null) {</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">            if (userDAO.getUserIdByToken(userToken) == house.getUserId().getId()) {</span>
+<span class="nc" id="L169">                Sensor sensor = sensorDAO.read(sensorId);</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">                if (sensor != null) {</span>
+<span class="nc" id="L171">                    sensorDAO.delete(sensor);</span>
+<span class="nc" id="L172">                    return new ResponseEntity&lt;&gt;(new HttpResponse(0, &quot;&quot;).getResponse(), HttpStatus.OK);</span>
+                } else {
+<span class="nc" id="L174">                    return new ResponseEntity&lt;&gt;(new HttpResponse(2, &quot;Sensor with given id doesn't exist&quot;)</span>
+<span class="nc" id="L175">                            .getResponse(),</span>
+                            HttpStatus.BAD_REQUEST);
+                }
+            } else {
+<span class="nc" id="L179">                return new ResponseEntity&lt;&gt;(new HttpResponse(100, &quot;unauthorized user&quot;)</span>
+<span class="nc" id="L180">                        .getResponse(), HttpStatus.FORBIDDEN);</span>
+            }
+        } else {
+<span class="nc" id="L183">            return new ResponseEntity&lt;&gt;(new HttpResponse(1, &quot;Invalid house or room identifier&quot;)</span>
+<span class="nc" id="L184">                    .getResponse(),</span>
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
