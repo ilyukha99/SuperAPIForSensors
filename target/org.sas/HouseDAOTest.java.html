@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HouseDAOTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SuperAPIForSensors_master$Application.exec</a> &gt; <a href="index.source.html" class="el_package">org.sas</a> &gt; <span class="el_source">HouseDAOTest.java</span></div><h1>HouseDAOTest.java</h1><pre class="source lang-java linenums">package org.sas;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.sas.dao.HouseDAO;
+import org.sas.dao.UserDAO;
+import org.sas.model.House;
+import org.sas.model.User;
+
+import static org.junit.Assert.*;
+
+<span class="nc" id="L15">public class HouseDAOTest {</span>
+    private UserDAO userDAO;
+    private HouseDAO houseDAO;
+
+<span class="nc" id="L19">    private final House test_house = new House();</span>
+<span class="nc" id="L20">    private final User test_user = new User();</span>
+<span class="nc" id="L21">    private final User test_user_2 = new User();</span>
+
+    private int id;
+    private int u1_id;
+    private int u2_id;
+
+<span class="nc" id="L27">    private final SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();</span>
+
+    @Before
+    public void doBefore() {
+<span class="nc" id="L31">        userDAO = new UserDAO(sessionFactory);</span>
+<span class="nc" id="L32">        houseDAO = new HouseDAO(sessionFactory);</span>
+
+<span class="nc" id="L34">        test_user.setToken(&quot;qwerty&quot;);</span>
+<span class="nc" id="L35">        test_user.setSensorToken(&quot;token&quot;);</span>
+<span class="nc" id="L36">        test_user.setPassword(&quot;12345&quot;);</span>
+<span class="nc" id="L37">        test_user.setTimeZone(7);</span>
+<span class="nc" id="L38">        test_user.setLogin(&quot;test_user&quot;);</span>
+
+<span class="nc" id="L40">        test_user_2.setToken(&quot;qwertyqwerty&quot;);</span>
+<span class="nc" id="L41">        test_user_2.setSensorToken(&quot;tokentoken&quot;);</span>
+<span class="nc" id="L42">        test_user_2.setPassword(&quot;12345&quot;);</span>
+<span class="nc" id="L43">        test_user_2.setTimeZone(7);</span>
+<span class="nc" id="L44">        test_user_2.setLogin(&quot;test_user_2&quot;);</span>
+
+<span class="nc" id="L46">        u1_id = userDAO.create(test_user);</span>
+<span class="nc" id="L47">        u2_id = userDAO.create(test_user_2);</span>
+
+<span class="nc" id="L49">        test_house.setName(&quot;test_house&quot;);</span>
+<span class="nc" id="L50">        test_house.setColor(&quot;blue&quot;);</span>
+<span class="nc" id="L51">        test_house.setUserId(test_user);</span>
+<span class="nc" id="L52">    }</span>
+
+    @After
+    public void doAfter() {
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        if (houseDAO.read(id) != null) {</span>
+<span class="nc" id="L57">            houseDAO.delete(test_house);</span>
+        }
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (userDAO.read(u1_id) != null) {</span>
+<span class="nc" id="L60">            userDAO.delete(test_user);</span>
+        }
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (userDAO.read(u2_id) != null) {</span>
+<span class="nc" id="L63">            userDAO.delete(test_user_2);</span>
+        }
+<span class="nc" id="L65">    }</span>
+
+    @Test
+    public void testCreateHouse() {
+<span class="nc" id="L69">        id = houseDAO.create(test_house);</span>
+<span class="nc" id="L70">        final House new_house = houseDAO.read(id);</span>
+<span class="nc" id="L71">        assertNotNull(new_house);</span>
+<span class="nc" id="L72">        assertEquals(new_house, test_house);</span>
+<span class="nc" id="L73">    }</span>
+
+    @Test
+    public void testUpdateHouse() {
+<span class="nc" id="L77">        id = houseDAO.create(test_house);</span>
+<span class="nc" id="L78">        test_house.setColor(&quot;red&quot;);</span>
+<span class="nc" id="L79">        test_house.setName(&quot;new_name&quot;);</span>
+<span class="nc" id="L80">        test_house.setUserId(test_user_2);</span>
+<span class="nc" id="L81">        houseDAO.update(test_house);</span>
+
+<span class="nc" id="L83">        final House house = houseDAO.read(id);</span>
+
+<span class="nc" id="L85">        assertNotNull(house);</span>
+
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        assertTrue(house.getColor().equals(&quot;red&quot;)</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">                &amp;&amp; house.getName().equals(&quot;new_name&quot;)</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">                &amp;&amp; house.getUserId().equals(test_user_2));</span>
+<span class="nc" id="L90">    }</span>
+
+    @Test
+    public void testDeleteHouse() {
+<span class="nc" id="L94">        id = houseDAO.create(test_house);</span>
+
+<span class="nc" id="L96">        final House before_del_house = houseDAO.read(id);</span>
+<span class="nc" id="L97">        assertNotNull(before_del_house);</span>
+
+<span class="nc" id="L99">        houseDAO.delete(test_house);</span>
+
+<span class="nc" id="L101">        final House after_del_house = houseDAO.read(id);</span>
+<span class="nc" id="L102">        assertNull(after_del_house);</span>
+<span class="nc" id="L103">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

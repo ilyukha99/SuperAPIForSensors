@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserDAO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SuperAPIForSensors_master$Application.exec</a> &gt; <a href="index.source.html" class="el_package">org.sas.dao</a> &gt; <span class="el_source">UserDAO.java</span></div><h1>UserDAO.java</h1><pre class="source lang-java linenums">package org.sas.dao;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
+import org.sas.model.User;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
+import org.hibernate.query.Query;
+
+import java.util.ArrayList;
+
+@Component
+public class UserDAO implements DAO&lt;User, Integer&gt; {
+    private final SessionFactory sessionFactory;
+
+    @Autowired
+<span class="fc" id="L19">    public UserDAO(@NonNull SessionFactory sessionFactory) {</span>
+<span class="fc" id="L20">        this.sessionFactory = sessionFactory;</span>
+<span class="fc" id="L21">    }</span>
+
+    @Override
+    public Integer create(@NonNull User user) {
+<span class="nc" id="L25">        try (final Session session = sessionFactory.openSession()) {</span>
+<span class="nc" id="L26">            session.beginTransaction();</span>
+<span class="nc" id="L27">            Integer id = (Integer) session.save(user);</span>
+<span class="nc" id="L28">            session.getTransaction().commit();</span>
+<span class="nc" id="L29">            return id;</span>
+        }
+    }
+
+    @Override
+    @Nullable
+    public User read(@NonNull Integer id) {
+<span class="nc" id="L36">        try (final Session session = sessionFactory.openSession()) {</span>
+<span class="nc" id="L37">            return session.get(User.class, id);</span>
+        }
+    }
+
+    @Override
+    public void update(@NonNull User user) {
+<span class="nc" id="L43">        try (final Session session = sessionFactory.openSession()) {</span>
+<span class="nc" id="L44">            session.beginTransaction();</span>
+<span class="nc" id="L45">            session.update(user);</span>
+<span class="nc" id="L46">            session.getTransaction().commit();</span>
+        }
+<span class="nc" id="L48">    }</span>
+
+    @Override
+    public void delete(@NonNull User user) {
+<span class="nc" id="L52">        try (final Session session = sessionFactory.openSession()) {</span>
+<span class="nc" id="L53">            session.beginTransaction();</span>
+<span class="nc" id="L54">            session.delete(user);</span>
+<span class="nc" id="L55">            session.getTransaction().commit();</span>
+        }
+<span class="nc" id="L57">    }</span>
+
+    public boolean tokenExists(@NonNull String userToken) {
+<span class="nc" id="L60">        try(Session session = sessionFactory.openSession()) {</span>
+<span class="nc" id="L61">            Query&lt;User&gt; query = session.createQuery(&quot;from org.sas.model.User user&quot; +</span>
+                    &quot; where user.token = :token&quot;, User.class);
+<span class="nc" id="L63">            query.setParameter(&quot;token&quot;, userToken);</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">            return !query.list().isEmpty();</span>
+        }
+    }
+
+    public Integer getUserIdByToken(@NonNull String userToken) {
+<span class="nc" id="L69">        try(Session session = sessionFactory.openSession()) {</span>
+<span class="nc" id="L70">            Query&lt;User&gt; query = session.createQuery(&quot;from org.sas.model.User user&quot; +</span>
+                    &quot; where user.token = :token&quot;, User.class);
+<span class="nc" id="L72">            query.setParameter(&quot;token&quot;, userToken.substring(7)); //Because &quot;Bearer &lt;token&gt;&quot;</span>
+<span class="nc" id="L73">            ArrayList&lt;User&gt; users = (ArrayList&lt;User&gt;) query.list();</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">            if (users.size() == 1) {</span>
+<span class="nc" id="L75">                return users.get(0).getId();</span>
+            } else {
+<span class="nc" id="L77">                return null;</span>
+            }
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        }</span>
+    }
+
+    public boolean loginExists(@NonNull String login) {
+<span class="nc" id="L83">        try(Session session = sessionFactory.openSession()) {</span>
+<span class="nc" id="L84">            Query&lt;User&gt; query = session.createQuery(&quot;from org.sas.model.User user&quot; +</span>
+                    &quot; where user.login = :login&quot;, User.class);
+<span class="nc" id="L86">            query.setParameter(&quot;login&quot;, login);</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">            return !query.list().isEmpty();</span>
+        }
+    }
+
+    public boolean sensorTokenExists(@NonNull String sensorToken) {
+<span class="nc" id="L92">        try(Session session = sessionFactory.openSession()) {</span>
+<span class="nc" id="L93">            Query&lt;User&gt; query = session.createQuery(&quot;from org.sas.model.User user&quot; +</span>
+                    &quot; where user.sensorToken = :sensorToken&quot;, User.class);
+<span class="nc" id="L95">            query.setParameter(&quot;sensorToken&quot;, sensorToken);</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">            return !query.list().isEmpty();</span>
+        }
+    }
+
+    public User findByLogin(String login) {
+<span class="nc" id="L101">        try(Session session = sessionFactory.openSession()) {</span>
+<span class="nc" id="L102">            Query&lt;User&gt; query = session.createQuery(&quot;from org.sas.model.User user&quot; +</span>
+                    &quot; where user.login = :login&quot;, User.class);
+<span class="nc" id="L104">            query.setParameter(&quot;login&quot;, login);</span>
+<span class="nc" id="L105">            ArrayList&lt;User&gt; users = (ArrayList&lt;User&gt;) query.list();</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">            if (users.size() == 1) {</span>
+<span class="nc" id="L107">                return users.get(0);</span>
+            } else {
+<span class="nc" id="L109">                return null;</span>
+            }
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RoomsController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SuperAPIForSensors_master$Application.exec</a> &gt; <a href="index.source.html" class="el_package">org.sas.controllers.webapi</a> &gt; <span class="el_source">RoomsController.java</span></div><h1>RoomsController.java</h1><pre class="source lang-java linenums">package org.sas.controllers.webapi;
+
+import org.sas.dao.HouseDAO;
+import org.sas.dao.RoomDAO;
+import org.sas.dao.SensorDAO;
+import org.sas.dao.UserDAO;
+import org.sas.model.House;
+import org.sas.model.Room;
+import org.sas.model.Sensor;
+import org.sas.model.User;
+import org.sas.views.RoomView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+@Controller
+public class RoomsController {
+    private final HouseDAO houseDAO;
+    private final RoomDAO roomDAO;
+    private final SensorDAO sensorDAO;
+    private final UserDAO userDAO;
+
+    @Autowired
+    public RoomsController(@NonNull HouseDAO houseDAO, @NonNull RoomDAO roomDAO,
+<span class="fc" id="L31">                           @NonNull SensorDAO sensorDAO, @NonNull UserDAO userDAO) {</span>
+<span class="fc" id="L32">        this.houseDAO = houseDAO;</span>
+<span class="fc" id="L33">        this.roomDAO = roomDAO;</span>
+<span class="fc" id="L34">        this.sensorDAO = sensorDAO;</span>
+<span class="fc" id="L35">        this.userDAO = userDAO;</span>
+<span class="fc" id="L36">    }</span>
+
+    // TODO: здесь получаем user_id из куки
+<span class="nc" id="L39">    private Integer getUserIdFromCookie(String userToken) { return userDAO.getUserIdByToken(userToken); }</span>
+
+    @GetMapping(&quot;/houses/{house_id}/rooms&quot;)
+    public ResponseEntity&lt;HashMap&lt;String, Object&gt;&gt; getHouseRooms (@RequestHeader(&quot;Authorization&quot;) String userToken,
+            @PathVariable Integer house_id
+    )
+    {
+<span class="nc" id="L46">        Integer user_id = getUserIdFromCookie(userToken);</span>
+
+<span class="nc" id="L48">        HashMap&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+
+        // check if user exists
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        if (user_id == null) {</span>
+<span class="nc" id="L52">            response.put(&quot;error&quot;, &quot;unauthorized user&quot;);</span>
+<span class="nc" id="L53">            response.put(&quot;code&quot;, 1);</span>
+<span class="nc" id="L54">            return new ResponseEntity&lt;&gt;(response, HttpStatus.FORBIDDEN);</span>
+        }
+
+<span class="nc" id="L57">        House house = houseDAO.read(house_id);</span>
+
+        // check if house exists
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if (house == null) {</span>
+<span class="nc" id="L61">            response.put(&quot;error&quot;, String.format(&quot;house with id %d does not exist&quot;, house_id));</span>
+<span class="nc" id="L62">            response.put(&quot;code&quot;, 1);</span>
+<span class="nc" id="L63">            return new ResponseEntity&lt;&gt;(response, HttpStatus.NOT_FOUND);</span>
+        }
+
+
+<span class="nc" id="L67">        ArrayList&lt;Room&gt; roomsList = (ArrayList&lt;Room&gt;) roomDAO.getRoomsList(house_id);</span>
+<span class="nc" id="L68">        ArrayList&lt;Integer&gt; resp = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        for (Room room : roomsList) {</span>
+<span class="nc" id="L71">            resp.add(room.getId());</span>
+<span class="nc" id="L72">        }</span>
+<span class="nc" id="L73">        response.put(&quot;rooms&quot;, resp);</span>
+
+<span class="nc" id="L75">        response.put(&quot;error&quot;, &quot;&quot;);</span>
+<span class="nc" id="L76">        response.put(&quot;code&quot;, 0);</span>
+<span class="nc" id="L77">        return new ResponseEntity&lt;&gt;(response, HttpStatus.OK);</span>
+    }
+
+    @GetMapping(&quot;/houses/{house_id}/rooms/{room_id}&quot;)
+    public ResponseEntity&lt;HashMap&lt;String, Object&gt;&gt; getRoomByHouseId (@RequestHeader(&quot;Authorization&quot;) String userToken,
+            @PathVariable Integer house_id,
+            @PathVariable Integer room_id
+    ) {
+<span class="nc" id="L85">        Integer user_id = getUserIdFromCookie(userToken);</span>
+
+<span class="nc" id="L87">        HashMap&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+
+        // check if user exists
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        if (user_id == null) {</span>
+<span class="nc" id="L91">            response.put(&quot;error&quot;, &quot;unauthorized user&quot;);</span>
+<span class="nc" id="L92">            response.put(&quot;code&quot;, 1);</span>
+<span class="nc" id="L93">            return new ResponseEntity&lt;&gt;(response, HttpStatus.FORBIDDEN);</span>
+        }
+
+<span class="nc" id="L96">        House house = houseDAO.read(house_id);</span>
+
+        // check if house exists
+<span class="nc bnc" id="L99" title="All 2 branches missed.">        if (house == null) {</span>
+<span class="nc" id="L100">            response.put(&quot;error&quot;, String.format(&quot;house with id %d does not exist&quot;, house_id));</span>
+<span class="nc" id="L101">            response.put(&quot;code&quot;, 1);</span>
+<span class="nc" id="L102">            return new ResponseEntity&lt;&gt;(response, HttpStatus.NOT_FOUND);</span>
+        }
+
+<span class="nc" id="L105">        Room room = roomDAO.read(room_id);</span>
+
+        // check if room exists
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (room == null) {</span>
+<span class="nc" id="L109">            response.put(&quot;error&quot;, String.format(&quot;room with id %d does not exist&quot;, room_id));</span>
+<span class="nc" id="L110">            response.put(&quot;code&quot;, 1);</span>
+<span class="nc" id="L111">            return new ResponseEntity&lt;&gt;(response, HttpStatus.NOT_FOUND);</span>
+        }
+
+        // check if requested room is in the house_id
+<span class="nc bnc" id="L115" title="All 2 branches missed.">        if (room.getHouseId().getId() != house_id) {</span>
+<span class="nc" id="L116">            response.put(&quot;error&quot;, String.format(&quot;room with id %d does not exist in the house %d&quot;, room_id, house_id));</span>
+<span class="nc" id="L117">            response.put(&quot;code&quot;, 1);</span>
+<span class="nc" id="L118">            return new ResponseEntity&lt;&gt;(response, HttpStatus.FORBIDDEN);</span>
+        }
+
+<span class="nc" id="L121">        ArrayList&lt;Sensor&gt; sensorsList = (ArrayList&lt;Sensor&gt;) sensorDAO.getSensorsList(room_id);</span>
+<span class="nc" id="L122">        ArrayList&lt;Integer&gt; resp = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L124" title="All 2 branches missed.">        for (Sensor sensor : sensorsList) {</span>
+<span class="nc" id="L125">            resp.add(sensor.getId());</span>
+<span class="nc" id="L126">        }</span>
+<span class="nc" id="L127">        response.put(&quot;sensors&quot;, resp);</span>
+
+<span class="nc" id="L129">        response.put(&quot;error&quot;, &quot;&quot;);</span>
+<span class="nc" id="L130">        response.put(&quot;code&quot;, 0);</span>
+
+<span class="nc" id="L132">        response.put(&quot;room_name&quot;, room.getName());</span>
+<span class="nc" id="L133">        response.put(&quot;room_color&quot;, room.getColor());</span>
+
+<span class="nc" id="L135">        return new ResponseEntity&lt;&gt;(response, HttpStatus.OK);</span>
+    }
+
+    @PostMapping(&quot;/houses/{house_id}/rooms&quot;)
+    public ResponseEntity&lt;HashMap&lt;String, Object&gt;&gt; createRoom (@PathVariable Integer house_id,
+                                                               @RequestBody RoomView roomView,
+                                                               @RequestHeader(&quot;Authorization&quot;) String userToken) {
+<span class="nc" id="L142">        Integer user_id = getUserIdFromCookie(userToken);</span>
+
+<span class="nc" id="L144">        HashMap&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L146" title="All 2 branches missed.">        if (user_id == null) {</span>
+<span class="nc" id="L147">            response.put(&quot;error&quot;, &quot;unauthorized user&quot;);</span>
+<span class="nc" id="L148">            response.put(&quot;code&quot;, 1);</span>
+<span class="nc" id="L149">            return new ResponseEntity&lt;&gt;(response, HttpStatus.FORBIDDEN);</span>
+        }
+
+<span class="nc" id="L152">        House house = houseDAO.read(house_id);</span>
+
+        // check if house exists
+<span class="nc bnc" id="L155" title="All 2 branches missed.">        if (house == null) {</span>
+<span class="nc" id="L156">            response.put(&quot;error&quot;, String.format(&quot;house with id %d does not exist&quot;, house_id));</span>
+<span class="nc" id="L157">            response.put(&quot;code&quot;, 1);</span>
+<span class="nc" id="L158">            return new ResponseEntity&lt;&gt;(response, HttpStatus.NOT_FOUND);</span>
+        }
+
+<span class="nc" id="L161">        Room new_room = new Room();</span>
+<span class="nc" id="L162">        new_room.setName(roomView.getRoomName());</span>
+<span class="nc" id="L163">        new_room.setColor(roomView.getRoomColor());</span>
+<span class="nc" id="L164">        new_room.setHouseId(house);</span>
+
+<span class="nc" id="L166">        roomDAO.create(new_room);</span>
+
+<span class="nc" id="L168">        response.put(&quot;error&quot;, &quot;&quot;);</span>
+<span class="nc" id="L169">        response.put(&quot;code&quot;, 0);</span>
+<span class="nc" id="L170">        return new ResponseEntity&lt;&gt;(response, HttpStatus.OK);</span>
+    }
+
+    @DeleteMapping(&quot;/houses/{house_id}/rooms/{room_id}&quot;)
+    public ResponseEntity&lt;HashMap&lt;String, Object&gt;&gt; deleteRoom (@RequestHeader(&quot;Authorization&quot;) String userToken,
+            @PathVariable Integer house_id,
+            @PathVariable Integer room_id
+    ) {
+<span class="nc" id="L178">        Integer user_id = getUserIdFromCookie(userToken);</span>
+
+<span class="nc" id="L180">        HashMap&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L182" title="All 2 branches missed.">        if (user_id == null) {</span>
+<span class="nc" id="L183">            response.put(&quot;error&quot;, &quot;unauthorized user&quot;);</span>
+<span class="nc" id="L184">            response.put(&quot;code&quot;, 1);</span>
+<span class="nc" id="L185">            return new ResponseEntity&lt;&gt;(response, HttpStatus.FORBIDDEN);</span>
+        }
+
+<span class="nc" id="L188">        House house = houseDAO.read(house_id);</span>
+
+<span class="nc bnc" id="L190" title="All 2 branches missed.">        if (house == null) {</span>
+<span class="nc" id="L191">            response.put(&quot;error&quot;, String.format(&quot;house with id %d does not exist&quot;, house_id));</span>
+<span class="nc" id="L192">            response.put(&quot;code&quot;, 1);</span>
+<span class="nc" id="L193">            return new ResponseEntity&lt;&gt;(response, HttpStatus.NOT_FOUND);</span>
+        }
+
+<span class="nc" id="L196">        Room del_room = roomDAO.read(room_id);</span>
+
+        // check if room exists
+<span class="nc bnc" id="L199" title="All 2 branches missed.">        if (del_room == null) {</span>
+<span class="nc" id="L200">            response.put(&quot;error&quot;, String.format(&quot;room with id %d does not exist&quot;, room_id));</span>
+<span class="nc" id="L201">            response.put(&quot;code&quot;, 1);</span>
+<span class="nc" id="L202">            return new ResponseEntity&lt;&gt;(response, HttpStatus.NOT_FOUND);</span>
+        }
+
+        // check if requested room is in the house_id
+<span class="nc bnc" id="L206" title="All 2 branches missed.">        if (del_room.getHouseId().getId() != house_id) {</span>
+<span class="nc" id="L207">            response.put(&quot;error&quot;, String.format(&quot;room with id %d does not exist in the house %d&quot;, room_id, house_id));</span>
+<span class="nc" id="L208">            response.put(&quot;code&quot;, 1);</span>
+<span class="nc" id="L209">            return new ResponseEntity&lt;&gt;(response, HttpStatus.FORBIDDEN);</span>
+        }
+
+<span class="nc" id="L212">        roomDAO.delete(del_room);</span>
+
+<span class="nc" id="L214">        response.put(&quot;error&quot;, &quot;&quot;);</span>
+<span class="nc" id="L215">        response.put(&quot;code&quot;, 0);</span>
+<span class="nc" id="L216">        return new ResponseEntity&lt;&gt;(response, HttpStatus.OK);</span>
+    }
+
+    @PutMapping(&quot;/houses/{house_id}/rooms/{room_id}&quot;)
+    public ResponseEntity&lt;HashMap&lt;String, Object&gt;&gt; editRoom (@PathVariable Integer house_id,
+                                                             @PathVariable Integer room_id,
+                                                             @RequestBody RoomView roomView,
+                                                             @RequestHeader(&quot;Authorization&quot;) String userToken) {
+<span class="nc" id="L224">        Integer user_id = getUserIdFromCookie(userToken);</span>
+
+<span class="nc" id="L226">        HashMap&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L228" title="All 2 branches missed.">        if (user_id == null) {</span>
+<span class="nc" id="L229">            response.put(&quot;error&quot;, &quot;unauthorized user&quot;);</span>
+<span class="nc" id="L230">            response.put(&quot;code&quot;, 1);</span>
+<span class="nc" id="L231">            return new ResponseEntity&lt;&gt;(response, HttpStatus.FORBIDDEN);</span>
+        }
+
+<span class="nc" id="L234">        House edit_house = houseDAO.read(house_id);</span>
+
+<span class="nc bnc" id="L236" title="All 2 branches missed.">        if (edit_house == null) {</span>
+<span class="nc" id="L237">            response.put(&quot;error&quot;, String.format(&quot;house with id %d does not exist&quot;, house_id));</span>
+<span class="nc" id="L238">            response.put(&quot;code&quot;, 1);</span>
+<span class="nc" id="L239">            return new ResponseEntity&lt;&gt;(response, HttpStatus.NOT_FOUND);</span>
+        }
+
+<span class="nc" id="L242">        Room edit_room = roomDAO.read(room_id);</span>
+
+        // check if room exists
+<span class="nc bnc" id="L245" title="All 2 branches missed.">        if (edit_room == null) {</span>
+<span class="nc" id="L246">            response.put(&quot;error&quot;, String.format(&quot;room with id %d does not exist&quot;, room_id));</span>
+<span class="nc" id="L247">            response.put(&quot;code&quot;, 1);</span>
+<span class="nc" id="L248">            return new ResponseEntity&lt;&gt;(response, HttpStatus.NOT_FOUND);</span>
+        }
+
+        // check if requested room is in the house_id
+<span class="nc bnc" id="L252" title="All 2 branches missed.">        if (edit_room.getHouseId().getId() != house_id) {</span>
+<span class="nc" id="L253">            response.put(&quot;error&quot;, String.format(&quot;room with id %d does not exist in the house %d&quot;, room_id, house_id));</span>
+<span class="nc" id="L254">            response.put(&quot;code&quot;, 1);</span>
+<span class="nc" id="L255">            return new ResponseEntity&lt;&gt;(response, HttpStatus.FORBIDDEN);</span>
+        }
+
+<span class="nc bnc" id="L258" title="All 2 branches missed.">        if (roomView.getRoomName() != null) {</span>
+<span class="nc" id="L259">            edit_room.setName(roomView.getRoomName());</span>
+        }
+<span class="nc bnc" id="L261" title="All 2 branches missed.">        if (roomView.getRoomColor() != null) {</span>
+<span class="nc" id="L262">            edit_room.setColor(roomView.getRoomColor());</span>
+        }
+
+<span class="nc" id="L265">        roomDAO.update(edit_room);</span>
+
+<span class="nc" id="L267">        response.put(&quot;error&quot;, &quot;&quot;);</span>
+<span class="nc" id="L268">        response.put(&quot;code&quot;, 0);</span>
+<span class="nc" id="L269">        return new ResponseEntity&lt;&gt;(response, HttpStatus.OK);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

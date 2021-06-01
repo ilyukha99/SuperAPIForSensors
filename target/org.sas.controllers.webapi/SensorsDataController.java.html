@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SensorsDataController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SuperAPIForSensors_master$Application.exec</a> &gt; <a href="index.source.html" class="el_package">org.sas.controllers.webapi</a> &gt; <span class="el_source">SensorsDataController.java</span></div><h1>SensorsDataController.java</h1><pre class="source lang-java linenums">package org.sas.controllers.webapi;
+
+import org.sas.dao.*;
+import org.sas.model.House;
+import org.sas.model.Room;
+import org.sas.model.Sensor;
+import org.sas.model.SensorData;
+import org.sas.responses.HttpResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+@Controller
+public class SensorsDataController {
+    private final SensorDataDAO sensorDataDAO;
+    private final HouseDAO houseDAO;
+    private final RoomDAO roomDAO;
+    private final UserDAO userDAO;
+
+    @Autowired
+    public SensorsDataController(@NonNull SensorDataDAO sensorDataDAO, @NonNull HouseDAO houseDAO,
+<span class="fc" id="L32">                                 @NonNull RoomDAO roomDAO, @NonNull UserDAO userDAO) {</span>
+<span class="fc" id="L33">        this.sensorDataDAO = sensorDataDAO;</span>
+<span class="fc" id="L34">        this.houseDAO = houseDAO;</span>
+<span class="fc" id="L35">        this.roomDAO = roomDAO;</span>
+<span class="fc" id="L36">        this.userDAO = userDAO;</span>
+<span class="fc" id="L37">    }</span>
+
+    @GetMapping(&quot;houses/{houseId}/rooms/{roomId}/sensors/{id}/data&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; getDataByDate(@PathVariable int id,
+                                                             @RequestParam(required = false) Long start,
+                                                             @RequestParam(required = false) Long end,
+                                                             @PathVariable int houseId, @PathVariable int roomId,
+                                                             @RequestHeader(&quot;Authorization&quot;) String userToken) {
+<span class="nc" id="L45">        House house = houseDAO.read(houseId);</span>
+<span class="nc" id="L46">        Room room = roomDAO.read(roomId);</span>
+        //TODO: maybe need refactor
+<span class="nc bnc" id="L48" title="All 4 branches missed.">        if (house != null &amp;&amp; room != null) {</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">            if (userDAO.getUserIdByToken(userToken) == house.getUserId().getId()) {</span>
+<span class="nc" id="L50">                ArrayList&lt;SensorData&gt; sensorDataList =</span>
+<span class="nc" id="L51">                        (ArrayList&lt;SensorData&gt;) sensorDataDAO.getSensorDataByDate(start, end);</span>
+<span class="nc" id="L52">                HashMap&lt;Long, Float&gt; responseDataList = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">                for (SensorData sensorData: sensorDataList) {</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">                    if (sensorData.getSensor().getId() == id) {</span>
+<span class="nc" id="L55">                        responseDataList.put(sensorData.getTime().getTime(), sensorData.getValue());</span>
+                    }
+<span class="nc" id="L57">                }</span>
+<span class="nc" id="L58">                return new ResponseEntity&lt;&gt;(new HttpResponse(0 , &quot;&quot;)</span>
+<span class="nc" id="L59">                        .addResponseParameter(&quot;data&quot;, responseDataList), HttpStatus.OK);</span>
+            } else {
+<span class="nc" id="L61">                return new ResponseEntity&lt;&gt;(new HttpResponse(100, &quot;unauthorized user&quot;)</span>
+<span class="nc" id="L62">                        .getResponse(), HttpStatus.FORBIDDEN);</span>
+            }
+        } else {
+<span class="nc" id="L65">            return new ResponseEntity&lt;&gt;(new HttpResponse(1, &quot;Invalid house or room identifier&quot;)</span>
+<span class="nc" id="L66">                    .getResponse(),</span>
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Room.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SuperAPIForSensors_master$Application.exec</a> &gt; <a href="index.source.html" class="el_package">org.sas.model</a> &gt; <span class="el_source">Room.java</span></div><h1>Room.java</h1><pre class="source lang-java linenums">package org.sas.model;
+
+import java.util.Objects;
+
+
+<span class="fc" id="L6">public class Room {</span>
+    private int id;
+    private String name;
+    private String color;
+
+    // один дом может иметь много комнат -- many-to-one (see Room.hbm.xml)
+    private House houseId;
+
+
+    public String getColor() {
+<span class="nc" id="L16">        return color;</span>
+    }
+
+    public void setColor(String color) {
+<span class="nc" id="L20">        this.color = color;</span>
+<span class="nc" id="L21">    }</span>
+
+    public int getId() {
+<span class="fc" id="L24">        return id;</span>
+    }
+
+    public void setId(int id) {
+<span class="nc" id="L28">        this.id = id;</span>
+<span class="nc" id="L29">    }</span>
+
+    public String getName() {
+<span class="nc" id="L32">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="nc" id="L36">        this.name = name;</span>
+<span class="nc" id="L37">    }</span>
+
+    public House getHouseId() {
+<span class="nc" id="L40">        return houseId;</span>
+    }
+
+    public void setHouseId(House houseId) {
+<span class="nc" id="L44">        this.houseId = houseId;</span>
+<span class="nc" id="L45">    }</span>
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (this == o) return true;</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (!(o instanceof Room)) return false;</span>
+<span class="nc" id="L51">        Room room = (Room) o;</span>
+<span class="nc bnc" id="L52" title="All 6 branches missed.">        return id == room.id &amp;&amp; name.equals(room.name) &amp;&amp; color.equals(room.color) &amp;&amp;</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">                houseId.getId() == room.houseId.getId();</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L58">        return Objects.hash(id, name, color, houseId.getId());</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L63">        return &quot;Room{&quot; +</span>
+                &quot;id=&quot; + id +
+                &quot;, name='&quot; + name + '\'' +
+                &quot;, color='&quot; + color + '\'' +
+<span class="nc" id="L67">                &quot;, houseId=&quot; + houseId.getId() +</span>
+                '}';
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

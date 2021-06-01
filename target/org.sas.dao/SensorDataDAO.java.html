@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SensorDataDAO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SuperAPIForSensors_master$Application.exec</a> &gt; <a href="index.source.html" class="el_package">org.sas.dao</a> &gt; <span class="el_source">SensorDataDAO.java</span></div><h1>SensorDataDAO.java</h1><pre class="source lang-java linenums">package org.sas.dao;
+
+import org.hibernate.Hibernate;
+import org.sas.model.SensorData;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
+
+import java.sql.Timestamp;
+import java.util.List;
+
+@Component
+public class SensorDataDAO  implements DAO&lt;SensorData, Integer&gt;{
+    private final SessionFactory sessionFactory;
+
+    @Autowired
+<span class="fc" id="L21">    public SensorDataDAO(@NonNull final SessionFactory sessionFactory) {</span>
+<span class="fc" id="L22">        this.sessionFactory = sessionFactory;</span>
+<span class="fc" id="L23">    }</span>
+
+    @Override
+    public Integer create(@NonNull SensorData sensorData){
+<span class="nc" id="L27">        try (final Session session = sessionFactory.openSession()){</span>
+<span class="nc" id="L28">            session.beginTransaction();</span>
+<span class="nc" id="L29">            Integer id = (Integer) session.save(sensorData);</span>
+<span class="nc" id="L30">            session.getTransaction().commit();</span>
+<span class="nc" id="L31">            return id;</span>
+        }
+    }
+
+    @Override
+    @Nullable
+    public SensorData read(@NonNull Integer id) {
+<span class="nc" id="L38">        try (final Session session = sessionFactory.openSession()){</span>
+<span class="nc" id="L39">            SensorData sensorData = session.get(SensorData.class, id);</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">            if (sensorData != null) {</span>
+<span class="nc" id="L41">                Hibernate.initialize(sensorData.getSensor());</span>
+            }
+<span class="nc" id="L43">            return sensorData;</span>
+        }
+    }
+
+    @Override
+    public void update(@NonNull SensorData sensorData) {
+<span class="nc" id="L49">        try (final Session session = sessionFactory.openSession()){</span>
+<span class="nc" id="L50">            session.beginTransaction();</span>
+<span class="nc" id="L51">            session.update(sensorData);</span>
+<span class="nc" id="L52">            session.getTransaction().commit();</span>
+        }
+<span class="nc" id="L54">    }</span>
+
+    @Override
+    public void delete(@NonNull SensorData sensorData) {
+<span class="nc" id="L58">        try (final Session session = sessionFactory.openSession()){</span>
+<span class="nc" id="L59">            session.beginTransaction();</span>
+<span class="nc" id="L60">            session.delete(sensorData);</span>
+<span class="nc" id="L61">            session.getTransaction().commit();</span>
+        }
+<span class="nc" id="L63">    }</span>
+
+    @NonNull
+    public List&lt;SensorData&gt; getSensorDataByDate(@Nullable Long startDate, @Nullable Long endDate) {
+<span class="nc" id="L67">        try (final Session session = sessionFactory.openSession()){</span>
+<span class="nc bnc" id="L68" title="All 4 branches missed.">            if (startDate != null &amp;&amp; endDate != null) {</span>
+<span class="nc" id="L69">                Query&lt;SensorData&gt; query = session.createQuery(&quot;from org.sas.model.SensorData sd where &quot; +</span>
+                        &quot;sd.time between :startDate and :endDate&quot;, SensorData.class);
+<span class="nc" id="L71">                query.setParameter(&quot;startDate&quot;, new Timestamp(startDate));</span>
+<span class="nc" id="L72">                query.setParameter(&quot;endDate&quot;, new Timestamp(endDate));</span>
+<span class="nc" id="L73">                return query.list();</span>
+<span class="nc bnc" id="L74" title="All 4 branches missed.">            } else if (startDate == null &amp;&amp; endDate != null) {</span>
+<span class="nc" id="L75">                Query&lt;SensorData&gt; query = session.createQuery(&quot;from org.sas.model.SensorData sd where &quot; +</span>
+                        &quot;sd.time &lt;= :endDate&quot;, SensorData.class);
+<span class="nc" id="L77">                query.setParameter(&quot;endDate&quot;,  new Timestamp(endDate));</span>
+<span class="nc" id="L78">                return query.list();</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">            } else if (startDate != null) {</span>
+<span class="nc" id="L80">                Query&lt;SensorData&gt; query = session.createQuery(&quot;from org.sas.model.SensorData sd where &quot; +</span>
+                        &quot;sd.time &gt;= :startDate&quot;, SensorData.class);
+<span class="nc" id="L82">                query.setParameter(&quot;startDate&quot;, new Timestamp(startDate));</span>
+<span class="nc" id="L83">                return query.list();</span>
+            } else {
+<span class="nc" id="L85">                Query&lt;SensorData&gt; query = session.createQuery(&quot;from org.sas.model.SensorData&quot;,</span>
+                        SensorData.class);
+<span class="nc" id="L87">                query.setMaxResults(100);</span>
+<span class="nc" id="L88">                return query.list();</span>
+            }
+<span class="nc bnc" id="L90" title="All 6 branches missed.">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
