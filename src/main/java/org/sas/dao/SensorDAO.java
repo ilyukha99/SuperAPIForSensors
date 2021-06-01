@@ -3,7 +3,6 @@ package org.sas.dao;
 import org.hibernate.Hibernate;
 import org.hibernate.query.Query;
 import org.sas.model.Room;
-import org.sas.model.SensorData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.hibernate.Session;
@@ -47,6 +46,7 @@ public class SensorDAO implements DAO<Sensor, Integer> {
             if (result != null) {
                 Hibernate.initialize(result.getUser());
                 Hibernate.initialize(result.getType());
+                Hibernate.initialize(result.getRoomId());
             }
             return result;
         }
@@ -79,12 +79,11 @@ public class SensorDAO implements DAO<Sensor, Integer> {
         }
     }
 
-    public List<Sensor> getSensorsList(Integer roomId) {
-        Room room = roomDAO.read(roomId);
+    public List<Sensor> getSensorsList(@NonNull int roomId) {
         try (final Session session = sessionFactory.openSession()) {
             Query<Sensor> query = session.createQuery(
-                    "from org.sas.model.Sensor s where s.roomId = :roomId", Sensor.class);
-            query.setParameter("roomId", room);
+                    "from org.sas.model.Sensor s where s.roomId.id = :roomId", Sensor.class);
+            query.setParameter("roomId", roomId);
             return query.list();
         }
     }

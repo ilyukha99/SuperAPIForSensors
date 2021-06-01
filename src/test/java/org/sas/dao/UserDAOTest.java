@@ -1,4 +1,4 @@
-package org.sas;
+package org.sas.dao;
 
 import org.sas.dao.UserDAO;
 import org.sas.model.User;

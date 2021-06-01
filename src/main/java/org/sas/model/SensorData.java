@@ -54,7 +54,7 @@ public class SensorData {
         if (this == o) return true;
         if (!(o instanceof SensorData)) return false;
         var sensorData = (SensorData) o;
-        return id == sensorData.id && Objects.equals(sensor, sensorData.sensor) && value == sensorData.value
+        return id == sensorData.id && sensor.getId() == sensorData.sensor.getId() && value == sensorData.value
                 && Objects.equals(time, sensorData.time);
     }
 
