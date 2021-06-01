@@ -5,8 +5,6 @@ import org.hibernate.cfg.Configuration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.sas.dao.HouseDAO;
-import org.sas.dao.UserDAO;
 import org.sas.model.House;
 import org.sas.model.User;
 

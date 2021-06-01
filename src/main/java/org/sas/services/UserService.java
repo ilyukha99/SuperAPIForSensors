@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserDAO userDAO;
     private final PasswordEncoder passwordEncoder;
+    private static final String NO_USER_FOUND = "No user found";
 
     @Autowired
     public UserService(@NonNull PasswordEncoder passwordEncoder, @NonNull UserDAO userDAO) {
@@ -29,7 +30,7 @@ public class UserService {
         if (user != null) {
             return user;
         }
-        throw new UsernameNotFoundException("No user found");
+        throw new UsernameNotFoundException(NO_USER_FOUND);
     }
 
     public User findByLoginAndPassword(String login, String password) {
@@ -37,17 +38,23 @@ public class UserService {
         if (user != null && passwordEncoder.matches(password, user.getPassword())) {
             return user;
         }
-        throw new UsernameNotFoundException("No user found");
+        throw new UsernameNotFoundException(NO_USER_FOUND);
     }
 
     public void updateUserToken(String token, String login) {
         User user = userDAO.findByLogin(login);
+        if (user == null) {
+            throw new UsernameNotFoundException(NO_USER_FOUND);
+        }
         user.setToken(token);
         userDAO.update(user);
     }
 
     public void updateSensorToken(String sensorToken, String login) {
         User user = userDAO.findByLogin(login);
+        if (user == null) {
+            throw new UsernameNotFoundException(NO_USER_FOUND);
+        }
         user.setSensorToken(sensorToken);
         userDAO.update(user);
     }

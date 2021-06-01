@@ -1,6 +1,5 @@
 package org.sas.dao;
 
-import org.sas.dao.UserDAO;
 import org.sas.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;

@@ -80,7 +80,7 @@ public class AuthController {
     @GetMapping(value="/generateToken", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> generateSensorToken(@RequestHeader("Authorization") String bearerHeader) {
         String userToken;
-        if (StringUtils.hasText(bearerHeader) && bearerHeader.startsWith("Bearer ")) {
+        if (!StringUtils.hasText(bearerHeader) && bearerHeader.startsWith("Bearer ")) {
             userToken = bearerHeader.substring(7);
         }
         else {

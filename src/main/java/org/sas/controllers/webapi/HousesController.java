@@ -31,7 +31,7 @@ public class HousesController {
     }
 
     // TODO: здесь получаем user_id из куки
-    private Integer getUserIdFromCookie(String userToken) { return userDAO.getUserIdByToken(userToken); }
+    private Integer getUserIdFromCookie(String userTokenHeader) { return userDAO.getUserIdByTokenHeader(userTokenHeader); }
 
     @GetMapping("/houses")
     public ResponseEntity<HashMap<String, Object>> getUserHouses(@RequestHeader("Authorization") String userToken)

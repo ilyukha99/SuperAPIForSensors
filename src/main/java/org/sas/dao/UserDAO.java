@@ -65,11 +65,11 @@ public class UserDAO implements DAO<User, Integer> {
         }
     }
 
-    public Integer getUserIdByToken(@NonNull String userToken) {
+    public Integer getUserIdByTokenHeader(@NonNull String userTokenHeader) {
         try(Session session = sessionFactory.openSession()) {
             Query<User> query = session.createQuery("from org.sas.model.User user" +
                     " where user.token = :token", User.class);
-            query.setParameter("token", userToken.substring(7)); //Because "Bearer <token>"
+            query.setParameter("token", userTokenHeader.substring(7)); //Because "Bearer <token>"
             ArrayList<User> users = (ArrayList<User>) query.list();
             if (users.size() == 1) {
                 return users.get(0).getId();

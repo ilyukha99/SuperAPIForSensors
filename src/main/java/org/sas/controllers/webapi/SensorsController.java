@@ -35,12 +35,12 @@ public class SensorsController {
 
     @GetMapping("/houses/{houseId}/rooms/{roomId}/sensors")
     public ResponseEntity<Map<String, Object>> getSensors(@PathVariable int houseId, @PathVariable int roomId,
-                                                          @RequestHeader("Authorization") String userToken) {
+                                                          @RequestHeader("Authorization") String userTokenHeader) {
         House house = houseDAO.read(houseId);
         Room room = roomDAO.read(roomId);
 
         if (house != null && room != null) {
-            if (userDAO.getUserIdByToken(userToken) == house.getUserId().getId()) {
+            if (userDAO.getUserIdByTokenHeader(userTokenHeader) == house.getUserId().getId()) {
                 ArrayList<Sensor> sensorList = (ArrayList<Sensor>) sensorDAO.getSensorsByHouseAndRoom(houseId, roomId);
                 ArrayList<Integer> sensorsIdList = new ArrayList<>();
                 for (Sensor sensor : sensorList) {
@@ -62,12 +62,12 @@ public class SensorsController {
     @GetMapping("/houses/{houseId}/rooms/{roomId}/sensors/{sensorId}")
     public ResponseEntity<Map<String, Object>> getSensor(@PathVariable int houseId, @PathVariable int roomId,
                                                          @PathVariable int sensorId,
-                                                         @RequestHeader("Authorization") String userToken) {
+                                                         @RequestHeader("Authorization") String userTokenHeader) {
         House house = houseDAO.read(houseId);
         Room room = roomDAO.read(roomId);
 
         if (house != null && room != null) {
-            if (userDAO.getUserIdByToken(userToken) == house.getUserId().getId()) {
+            if (userDAO.getUserIdByTokenHeader(userTokenHeader) == house.getUserId().getId()) {
                 Sensor sensor = sensorDAO.read(sensorId);
                 if (sensor != null) {
                     return new ResponseEntity<>(new HttpResponse(0, "")
@@ -91,18 +91,19 @@ public class SensorsController {
     @PostMapping("/houses/{houseId}/rooms/{roomId}/sensors")
     public ResponseEntity<Map<String, Object>> createSensor(@PathVariable int houseId, @PathVariable int roomId,
                                                             @RequestBody SensorView sensorView,
-                                                            @RequestHeader("Authorization") String userToken) {
+                                                            @RequestHeader("Authorization") String userTokenHeader) {
         House house = houseDAO.read(houseId);
         Room room = roomDAO.read(roomId);
 
         if (house != null && room != null) {
-            if (userDAO.getUserIdByToken(userToken) == house.getUserId().getId()) {
+            Integer userId = userDAO.getUserIdByTokenHeader(userTokenHeader);
+            if (userId == house.getUserId().getId()) {
                 House houseOfRoom = houseDAO.read(room.getHouseId().getId());
                 SensorType sensorType = sensorTypeDAO.read(sensorView.getTypeId());
                 if (houseOfRoom != null && sensorType != null && houseOfRoom.equals(house)) {
                     Sensor sensor = new Sensor();
                     sensor.setName(sensorView.getName());
-                    sensor.setUser(userDAO.read(userDAO.getUserIdByToken(userToken)));
+                    sensor.setUser(userDAO.read(userId));
                     sensor.setType(sensorTypeDAO.read(sensorView.getTypeId()));
                     sensor.setRoomId(room);
                     sensorDAO.create(sensor);
@@ -129,12 +130,12 @@ public class SensorsController {
     public ResponseEntity<Map<String, Object>> updateSensor(@PathVariable int houseId, @PathVariable int roomId,
                                                             @PathVariable int sensorId,
                                                             @RequestBody SensorView sensorView,
-                                                            @RequestHeader("Authorization") String userToken) {
+                                                            @RequestHeader("Authorization") String userTokenHeader) {
         House house = houseDAO.read(houseId);
         Room room = roomDAO.read(roomId);
 
         if (house != null && room != null) {
-            if (userDAO.getUserIdByToken(userToken) == house.getUserId().getId()) {
+            if (userDAO.getUserIdByTokenHeader(userTokenHeader) == house.getUserId().getId()) {
                 Sensor sensor = sensorDAO.read(sensorId);
                 SensorType sensorType = sensorTypeDAO.read(sensorView.getTypeId());
                 if (sensor != null && sensorType != null) {
@@ -160,12 +161,12 @@ public class SensorsController {
     @DeleteMapping("/houses/{houseId}/rooms/{roomId}/sensors/{sensorId}")
     public ResponseEntity<Map<String, Object>> deleteSensor(@PathVariable int houseId, @PathVariable int roomId,
                                                             @PathVariable int sensorId,
-                                                            @RequestHeader("Authorization") String userToken) {
+                                                            @RequestHeader("Authorization") String userTokenHeader) {
         House house = houseDAO.read(houseId);
         Room room = roomDAO.read(roomId);
 
         if (house != null && room != null) {
-            if (userDAO.getUserIdByToken(userToken) == house.getUserId().getId()) {
+            if (userDAO.getUserIdByTokenHeader(userTokenHeader) == house.getUserId().getId()) {
                 Sensor sensor = sensorDAO.read(sensorId);
                 if (sensor != null) {
                     sensorDAO.delete(sensor);

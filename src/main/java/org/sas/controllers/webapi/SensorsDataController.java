@@ -3,7 +3,6 @@ package org.sas.controllers.webapi;
 import org.sas.dao.*;
 import org.sas.model.House;
 import org.sas.model.Room;
-import org.sas.model.Sensor;
 import org.sas.model.SensorData;
 import org.sas.responses.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ public class SensorsDataController {
         Room room = roomDAO.read(roomId);
         //TODO: maybe need refactor
         if (house != null && room != null) {
-            if (userDAO.getUserIdByToken(userToken) == house.getUserId().getId()) {
+            if (userDAO.getUserIdByTokenHeader(userToken) == house.getUserId().getId()) {
                 ArrayList<SensorData> sensorDataList =
                         (ArrayList<SensorData>) sensorDataDAO.getSensorDataByDate(start, end);
                 HashMap<Long, Float> responseDataList = new HashMap<>();
