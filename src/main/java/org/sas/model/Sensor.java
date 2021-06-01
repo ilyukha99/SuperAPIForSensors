@@ -56,7 +56,8 @@ public class Sensor {
         return "Sensor{id=" + id +
                 ", name='" + name + '\'' +
                 ", type=" + type.getId() +
-                ", user=" + user.getId() + '}';
+                ", user=" + user.getId() +
+                ", room="+ roomId.getId() + '}';
     }
 
     @Override
@@ -64,12 +65,12 @@ public class Sensor {
         if (this == o) return true;
         if (!(o instanceof Sensor)) return false;
         Sensor sensor = (Sensor) o;
-        return id == sensor.id && Objects.equals(name, sensor.name) && Objects.equals(type, sensor.type)
-                && Objects.equals(user, sensor.user);
+        return id == sensor.id && Objects.equals(name, sensor.name) && type.getId() == sensor.type.getId()
+                && user.getId() == sensor.user.getId() && roomId.getId() == sensor.roomId.getId();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, type.getName(), user.getLogin());
+        return Objects.hash(id, name, type.getName(), user.getLogin(), roomId.getId());
     }
 }
