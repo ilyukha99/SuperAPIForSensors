@@ -1,9 +1,11 @@
 package org.sas.dao;
 
-import org.sas.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.sas.model.User;
 
 import static org.junit.Assert.*;
 
@@ -12,6 +14,7 @@ public class UserDAOTest {
     private final SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
     private final User testUser = new User();
     private int primaryKey;
+    private final String userLogin = "test";
 
     @Before
     public void doBefore() {
@@ -21,7 +24,7 @@ public class UserDAOTest {
         testUser.setPassword("12345");
         testUser.setTimeZone(18);
         testUser.setSensorToken("dfaf");
-        testUser.setLogin("test");
+        testUser.setLogin(userLogin);
     }
 
     @After
@@ -36,7 +39,7 @@ public class UserDAOTest {
      * @see org.sas.dao.UserDAO#read(Integer)
      */
     @Test
-    public void checkCreatedUser() {
+    public void checkUserCreation() {
         primaryKey = userDAO.create(testUser);
         final User user = userDAO.read(primaryKey);
         assertNotNull(user);
@@ -47,7 +50,7 @@ public class UserDAOTest {
      * @see org.sas.dao.UserDAO#delete(User)
      */
     @Test
-    public void checkDeletions() {
+    public void checkUserDeletion() {
         primaryKey = userDAO.create(testUser);
         final User userBeforeDeletion = userDAO.read(primaryKey);
         assertNotNull(userBeforeDeletion);
@@ -60,7 +63,7 @@ public class UserDAOTest {
      * @see org.sas.dao.UserDAO#update(User)
      */
     @Test
-    public void checkUpdates() {
+    public void checkUserUpdate() {
         primaryKey = userDAO.create(testUser);
         testUser.setLogin("NewLogin");
         testUser.setPassword("NewPassword");
@@ -68,5 +71,38 @@ public class UserDAOTest {
         final User user = userDAO.read(primaryKey);
         assertNotNull(user);
         assertTrue(user.getLogin().equals("NewLogin") && user.getPassword().equals("NewPassword"));
+    }
+
+    /**
+     * @see org.sas.dao.UserDAO#findByLogin(String)
+     * @see org.sas.dao.UserDAO#loginExists(String)
+     */
+    @Test
+    public void checkAndFindByLogin() {
+        primaryKey = userDAO.create(testUser);
+        assertTrue(userDAO.loginExists(userLogin));
+        assertEquals(userDAO.findByLogin(userLogin), testUser);
+    }
+
+    /**
+     * @see org.sas.dao.UserDAO#tokenExists(String)
+     * @see org.sas.dao.UserDAO#getUserIdByTokenHeader(String)
+     */
+    @Test
+    public void checkUserLoginAndFindByHeader() {
+        primaryKey = userDAO.create(testUser);
+        String token = testUser.getToken();
+        assertTrue(userDAO.tokenExists(token));
+        assertEquals(primaryKey, userDAO.getUserIdByTokenHeader("Bearer " + token).intValue());
+    }
+
+    /**
+     * @see org.sas.dao.UserDAO#sensorTokenExists(String)
+     */
+    @Test
+    public void checkSensorTokenExistence() {
+        primaryKey = userDAO.create(testUser);
+        assertTrue(userDAO.sensorTokenExists(testUser.getSensorToken()));
+        assertFalse(userDAO.sensorTokenExists("|||||||||||||||||||"));
     }
 }
