@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-configuration xmlns="http://www.hibernate.org/xsd/orm/cfg">
+    <session-factory>
+        <property name="connection.url">jdbc:postgresql://3.142.115.21:5432/sensorsdb</property>
+        <property name="connection.driver_class">org.postgresql.Driver</property>
+        <property name="connection.username">creator</property>
+        <property name="connection.password">kr3$4t0r</property>
+        <property name="dialect">org.hibernate.dialect.PostgreSQL94Dialect</property>
+        <property name="show_sql">true</property>
+
+        <mapping resource="models/User.hbm.xml"/>
+        <mapping resource="models/SensorType.hbm.xml"/>
+        <mapping resource="models/SensorData.hbm.xml"/>
+        <mapping resource="models/Sensor.hbm.xml"/>
+        <mapping resource="models/House.hbm.xml"/>
+        <mapping resource="models/Room.hbm.xml"/>
+    </session-factory>
+</hibernate-configuration>
