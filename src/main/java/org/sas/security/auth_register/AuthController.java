@@ -3,9 +3,9 @@ package org.sas.security.auth_register;
 import org.sas.dao.UserDAO;
 import org.sas.model.User;
 import org.sas.responses.AuthResponse;
+import org.sas.responses.HttpResponse;
 import org.sas.security.jwt.JwtProvider;
 import org.sas.services.UserService;
-import org.sas.responses.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,7 +14,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import javax.validation.Valid;
 import java.util.Map;
@@ -80,7 +83,7 @@ public class AuthController {
     @GetMapping(value="/generateToken", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> generateSensorToken(@RequestHeader("Authorization") String bearerHeader) {
         String userToken;
-        if (!StringUtils.hasText(bearerHeader) && bearerHeader.startsWith("Bearer ")) {
+        if (StringUtils.hasText(bearerHeader) && bearerHeader.startsWith("Bearer ")) {
             userToken = bearerHeader.substring(7);
         }
         else {
